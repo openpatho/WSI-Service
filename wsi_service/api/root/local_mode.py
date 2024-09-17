@@ -9,14 +9,15 @@ from wsi_service.custom_models.queries import CaseQuery, SlideQuery
 
 def add_routes_local_mode(app, settings):
     localmapper = MapperClass(settings.data_dir)
-
+    ic()
     @app.get("/cases/", response_model=List[CaseLocalMapper], tags=["Additional Routes (Standalone WSI Service)"])
     async def _():
+        ic()
         """
         (Only in standalone mode) Browse the local directory and return case ids for each available directory.
         """
-        cases = localmapper.get_cases()
-        return cases
+        #cases = localmapper.get_cases()
+        #return cases
 
     @app.get(
         "/cases/slides/",

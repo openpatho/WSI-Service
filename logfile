@@ -1,0 +1,518 @@
+#0 building with "default" instance using docker driver
+
+#1 [wsi_service internal] load build definition from Dockerfile
+#1 transferring dockerfile: 4.62kB done
+#1 DONE 0.0s
+
+#2 [wsi_service internal] load metadata for docker.io/library/ubuntu:22.04@sha256:bcc511d82482900604524a8e8d64bf4c53b2461868dac55f4d04d660e61983cb
+#2 DONE 0.0s
+
+#3 [wsi_service internal] load metadata for registry.gitlab.com/empaia/integration/ci-docker-images/test-runner:0.2.8@sha256:0c20dd487c2bb040fd78991bf54f396cb1fd9ab314a7a55bee0ad4909748797d
+#3 DONE 0.0s
+
+#4 [wsi_service internal] load .dockerignore
+#4 transferring context: 85B done
+#4 DONE 0.0s
+
+#5 [wsi_service wsi_service_intermediate  1/23] FROM docker.io/library/ubuntu:22.04@sha256:bcc511d82482900604524a8e8d64bf4c53b2461868dac55f4d04d660e61983cb
+#5 DONE 0.0s
+
+#6 [wsi_service wsi_service_build  1/19] FROM registry.gitlab.com/empaia/integration/ci-docker-images/test-runner:0.2.8@sha256:0c20dd487c2bb040fd78991bf54f396cb1fd9ab314a7a55bee0ad4909748797d
+#6 DONE 0.0s
+
+#7 [wsi_service internal] load build context
+#7 transferring context: 34.24kB 0.0s done
+#7 DONE 0.0s
+
+#8 [wsi_service wsi_service_build  4/19] RUN curl -o /usr/lib/x86_64-linux-gnu/libopenslide.so.0   https://gitlab.com/api/v4/projects/36668960/packages/generic/libopenslide.so.0/3390d5a/libopenslide.so.0
+#8 CACHED
+
+#9 [wsi_service wsi_service_build  2/19] RUN apt-get update   && apt-get install --no-install-recommends -y   python3-openslide
+#9 CACHED
+
+#10 [wsi_service wsi_service_build  3/19] RUN mkdir /openslide_deps
+#10 CACHED
+
+#11 [wsi_service wsi_service_build  5/19] RUN cp /usr/lib/x86_64-linux-gnu/libopenslide.so.0 /openslide_deps
+#11 CACHED
+
+#12 [wsi_service wsi_service_build  6/19] RUN ldd /usr/lib/x86_64-linux-gnu/libopenslide.so.0   | grep "=> /" | awk '{print $3}' | xargs -I '{}' cp -v '{}' /openslide_deps
+#12 CACHED
+
+#13 [wsi_service wsi_service_build  7/19] COPY . /wsi-service
+#13 DONE 0.9s
+
+#14 [wsi_service wsi_service_build  8/19] WORKDIR /wsi-service
+#14 DONE 0.1s
+
+#15 [wsi_service wsi_service_build  9/19] RUN poetry build && poetry export -f requirements.txt > requirements.txt
+#15 0.656 Creating virtualenv wsi-service-4j7_7FOA-py3.10 in /root/.cache/pypoetry/virtualenvs
+#15 1.054 Building wsi-service (0.14.0)
+#15 1.764 Warning: poetry.lock is not consistent with pyproject.toml. You may be getting improper dependencies. Run `poetry lock [--no-update]` to fix it.
+#15 DONE 2.1s
+
+#16 [wsi_service wsi_service_build 10/19] WORKDIR /wsi-service/wsi_service_base_plugins/openslide
+#16 DONE 0.1s
+
+#17 [wsi_service wsi_service_build 11/19] RUN poetry build && poetry export -f requirements.txt > requirements.txt
+#17 0.588 Creating virtualenv wsi-service-plugin-openslide-6IrB67dU-py3.10 in /root/.cache/pypoetry/virtualenvs
+#17 0.783 Building wsi-service-plugin-openslide (1.4.2)
+#17 DONE 1.4s
+
+#18 [wsi_service wsi_service_build 12/19] WORKDIR /wsi-service/wsi_service_base_plugins/pil
+#18 DONE 0.1s
+
+#19 [wsi_service wsi_service_build 13/19] RUN poetry build && poetry export -f requirements.txt > requirements.txt
+#19 0.627 Creating virtualenv wsi-service-plugin-pil-QrwLLtm5-py3.10 in /root/.cache/pypoetry/virtualenvs
+#19 0.822 Building wsi-service-plugin-pil (0.4.1)
+#19 DONE 1.5s
+
+#20 [wsi_service wsi_service_build 14/19] WORKDIR /wsi-service/wsi_service_base_plugins/tifffile
+#20 DONE 0.1s
+
+#21 [wsi_service wsi_service_build 15/19] RUN poetry build && poetry export -f requirements.txt > requirements.txt
+#21 0.643 Creating virtualenv wsi-service-plugin-tifffile-pUJWOhEH-py3.10 in /root/.cache/pypoetry/virtualenvs
+#21 0.838 Building wsi-service-plugin-tifffile (0.4.3)
+#21 DONE 1.5s
+
+#22 [wsi_service wsi_service_build 16/19] WORKDIR /wsi-service/wsi_service_base_plugins/tiffslide
+#22 DONE 0.1s
+
+#23 [wsi_service wsi_service_build 17/19] RUN poetry build && poetry export -f requirements.txt > requirements.txt
+#23 0.619 Creating virtualenv wsi-service-plugin-tiffslide-f4B0sLEn-py3.10 in /root/.cache/pypoetry/virtualenvs
+#23 0.817 Building wsi-service-plugin-tiffslide (0.2.3)
+#23 DONE 1.5s
+
+#24 [wsi_service wsi_service_build 18/19] WORKDIR /wsi-service/wsi_service_base_plugins/wsidicom
+#24 DONE 0.0s
+
+#25 [wsi_service wsi_service_build 19/19] RUN poetry build && poetry export -f requirements.txt > requirements.txt
+#25 0.634 Creating virtualenv wsi-service-plugin-wsidicom-XtXiQUUq-py3.10 in /root/.cache/pypoetry/virtualenvs
+#25 0.830 Building wsi-service-plugin-wsidicom (0.4.4)
+#25 DONE 1.5s
+
+#26 [wsi_service wsi_service_intermediate 12/23] COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/tiffslide/requirements.txt /artifacts/requirements_tiffslide.txt
+#26 CACHED
+
+#27 [wsi_service wsi_service_intermediate  9/23] RUN pip install -r /artifacts/requirements_pil.txt
+#27 CACHED
+
+#28 [wsi_service wsi_service_intermediate  7/23] RUN pip install -r /artifacts/requirements_openslide.txt
+#28 CACHED
+
+#29 [wsi_service wsi_service_intermediate  6/23] COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/openslide/requirements.txt /artifacts/requirements_openslide.txt
+#29 CACHED
+
+#30 [wsi_service wsi_service_intermediate 11/23] RUN pip install -r /artifacts/requirements_tiffile.txt
+#30 CACHED
+
+#31 [wsi_service wsi_service_intermediate  4/23] COPY --from=wsi_service_build /wsi-service/requirements.txt /artifacts
+#31 CACHED
+
+#32 [wsi_service wsi_service_intermediate  3/23] RUN mkdir /artifacts
+#32 CACHED
+
+#33 [wsi_service wsi_service_intermediate 10/23] COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/tifffile/requirements.txt /artifacts/requirements_tiffile.txt
+#33 CACHED
+
+#34 [wsi_service wsi_service_intermediate  5/23] RUN pip install -r /artifacts/requirements.txt
+#34 CACHED
+
+#35 [wsi_service wsi_service_intermediate 14/23] COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/wsidicom/requirements.txt /artifacts/requirements_wsidicom.txt
+#35 CACHED
+
+#36 [wsi_service wsi_service_intermediate  8/23] COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/pil/requirements.txt /artifacts/requirements_pil.txt
+#36 CACHED
+
+#37 [wsi_service wsi_service_intermediate  2/23] RUN apt-get update   && apt-get install --no-install-recommends -y build-essential python3-pip python3-packaging python3-dev   && rm -rf /var/lib/apt/lists/*
+#37 CACHED
+
+#38 [wsi_service wsi_service_intermediate 13/23] RUN pip install -r /artifacts/requirements_tiffslide.txt
+#38 CACHED
+
+#39 [wsi_service wsi_service_intermediate 15/23] RUN pip install -r /artifacts/requirements_wsidicom.txt
+#39 CACHED
+
+#40 [wsi_service wsi_service_intermediate 16/23] COPY --from=wsi_service_build /wsi-service/dist/ /wsi-service/dist/
+#40 DONE 0.1s
+
+#41 [wsi_service wsi_service_intermediate 17/23] COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/openslide/dist/ /wsi-service/dist/
+#41 DONE 0.1s
+
+#42 [wsi_service wsi_service_intermediate 18/23] COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/pil/dist/ /wsi-service/dist/
+#42 DONE 0.1s
+
+#43 [wsi_service wsi_service_intermediate 19/23] COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/tifffile/dist/ /wsi-service/dist/
+#43 DONE 0.1s
+
+#44 [wsi_service wsi_service_intermediate 20/23] COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/tiffslide/dist/ /wsi-service/dist/
+#44 DONE 0.1s
+
+#45 [wsi_service wsi_service_intermediate 21/23] COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/wsidicom/dist/ /wsi-service/dist/
+#45 DONE 0.0s
+
+#46 [wsi_service wsi_service_intermediate 22/23] RUN pip3 install /wsi-service/dist/*.whl
+#46 0.789 Processing /wsi-service/dist/wsi_service-0.14.0-py3-none-any.whl
+#46 0.802 Processing /wsi-service/dist/wsi_service_plugin_openslide-1.4.2-py3-none-any.whl
+#46 0.810 Processing /wsi-service/dist/wsi_service_plugin_pil-0.4.1-py3-none-any.whl
+#46 0.817 Processing /wsi-service/dist/wsi_service_plugin_tifffile-0.4.3-py3-none-any.whl
+#46 0.825 Processing /wsi-service/dist/wsi_service_plugin_tiffslide-0.2.3-py3-none-any.whl
+#46 0.833 Processing /wsi-service/dist/wsi_service_plugin_wsidicom-0.4.4-py3-none-any.whl
+#46 0.855 Requirement already satisfied: uvloop<0.20.0,>=0.19.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (0.19.0)
+#46 0.856 Requirement already satisfied: uvicorn<0.28.0,>=0.27.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (0.27.1)
+#46 0.857 Requirement already satisfied: tifffile<2025.0.0,>=2024.0.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (2024.2.12)
+#46 0.858 Requirement already satisfied: zipfly<7.0.0,>=6.0.3 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (6.0.5)
+#46 0.858 Requirement already satisfied: pydantic-settings<3.0.0,>=2.0.2 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (2.1.0)
+#46 1.066 Collecting fastapi<0.109.0,>=0.108.0
+#46 1.155   Downloading fastapi-0.108.0-py3-none-any.whl (92 kB)
+#46 1.189      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 92.0/92.0 KB 3.1 MB/s eta 0:00:00
+#46 1.196 Requirement already satisfied: imagecodecs<2025.0.0,>=2024.0.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (2024.1.1)
+#46 1.199 Requirement already satisfied: numpy<2.0.0,>=1.22.3 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (1.26.4)
+#46 1.200 Requirement already satisfied: httptools<0.7.0,>=0.6.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (0.6.1)
+#46 1.203 Requirement already satisfied: filelock<4.0.0,>=3.6.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (3.13.1)
+#46 1.204 Requirement already satisfied: six<2.0.0,>=1.16.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (1.16.0)
+#46 1.230 Collecting icecream<=2.1.3
+#46 1.243   Downloading icecream-2.1.3-py2.py3-none-any.whl (8.4 kB)
+#46 1.248 Requirement already satisfied: httpx<0.27.0,>=0.26.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (0.26.0)
+#46 1.249 Requirement already satisfied: PyJWT<3.0.0,>=2.1.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (2.8.0)
+#46 1.250 Requirement already satisfied: aiohttp<4.0.0,>=3.8.1 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (3.9.3)
+#46 1.251 Requirement already satisfied: aiofiles<24.0.0,>=23.0.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (23.2.1)
+#46 1.251 Requirement already satisfied: Pillow<11.0.0,>=10.0.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (10.2.0)
+#46 1.252 Requirement already satisfied: cryptography<43.0.0,>=42.0.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (42.0.4)
+#46 1.253 Requirement already satisfied: requests<3.0.0,>=2.27.1 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (2.31.0)
+#46 1.254 Requirement already satisfied: idna<4.0,>=3.3 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (3.6)
+#46 1.255 Requirement already satisfied: pydantic[dotenv]<3.0.0,>=2.0.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service==0.14.0) (2.6.1)
+#46 1.258 Requirement already satisfied: openslide-wrapper<2.0.0,>=1.1.2 in /usr/local/lib/python3.10/dist-packages (from wsi-service-plugin-openslide==1.4.2) (1.1.2)
+#46 1.264 Requirement already satisfied: scikit-image<0.23.0,>=0.22.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service-plugin-tifffile==0.4.3) (0.22.0)
+#46 1.267 Requirement already satisfied: tiffslide<3.0.0,>=2.0.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service-plugin-tiffslide==0.2.3) (2.3.1)
+#46 1.270 Requirement already satisfied: wsidicom<0.18.0,>=0.17.0 in /usr/local/lib/python3.10/dist-packages (from wsi-service-plugin-wsidicom==0.4.4) (0.17.0)
+#46 1.283 Requirement already satisfied: aiosignal>=1.1.2 in /usr/local/lib/python3.10/dist-packages (from aiohttp<4.0.0,>=3.8.1->wsi-service==0.14.0) (1.3.1)
+#46 1.284 Requirement already satisfied: attrs>=17.3.0 in /usr/local/lib/python3.10/dist-packages (from aiohttp<4.0.0,>=3.8.1->wsi-service==0.14.0) (23.2.0)
+#46 1.285 Requirement already satisfied: multidict<7.0,>=4.5 in /usr/local/lib/python3.10/dist-packages (from aiohttp<4.0.0,>=3.8.1->wsi-service==0.14.0) (6.0.5)
+#46 1.286 Requirement already satisfied: yarl<2.0,>=1.0 in /usr/local/lib/python3.10/dist-packages (from aiohttp<4.0.0,>=3.8.1->wsi-service==0.14.0) (1.9.4)
+#46 1.286 Requirement already satisfied: frozenlist>=1.1.1 in /usr/local/lib/python3.10/dist-packages (from aiohttp<4.0.0,>=3.8.1->wsi-service==0.14.0) (1.4.1)
+#46 1.288 Requirement already satisfied: async-timeout<5.0,>=4.0 in /usr/local/lib/python3.10/dist-packages (from aiohttp<4.0.0,>=3.8.1->wsi-service==0.14.0) (4.0.3)
+#46 1.307 Requirement already satisfied: cffi>=1.12 in /usr/local/lib/python3.10/dist-packages (from cryptography<43.0.0,>=42.0.0->wsi-service==0.14.0) (1.16.0)
+#46 1.390 Collecting starlette<0.33.0,>=0.29.0
+#46 1.403   Downloading starlette-0.32.0.post1-py3-none-any.whl (70 kB)
+#46 1.415      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 70.0/70.0 KB 6.1 MB/s eta 0:00:00
+#46 1.417 Requirement already satisfied: typing-extensions>=4.8.0 in /usr/local/lib/python3.10/dist-packages (from fastapi<0.109.0,>=0.108.0->wsi-service==0.14.0) (4.9.0)
+#46 1.443 Requirement already satisfied: certifi in /usr/local/lib/python3.10/dist-packages (from httpx<0.27.0,>=0.26.0->wsi-service==0.14.0) (2024.2.2)
+#46 1.444 Requirement already satisfied: httpcore==1.* in /usr/local/lib/python3.10/dist-packages (from httpx<0.27.0,>=0.26.0->wsi-service==0.14.0) (1.0.2)
+#46 1.444 Requirement already satisfied: anyio in /usr/local/lib/python3.10/dist-packages (from httpx<0.27.0,>=0.26.0->wsi-service==0.14.0) (4.2.0)
+#46 1.445 Requirement already satisfied: sniffio in /usr/local/lib/python3.10/dist-packages (from httpx<0.27.0,>=0.26.0->wsi-service==0.14.0) (1.3.0)
+#46 1.452 Requirement already satisfied: h11<0.15,>=0.13 in /usr/local/lib/python3.10/dist-packages (from httpcore==1.*->httpx<0.27.0,>=0.26.0->wsi-service==0.14.0) (0.14.0)
+#46 1.502 Collecting pygments>=2.2.0
+#46 1.514   Downloading pygments-2.18.0-py3-none-any.whl (1.2 MB)
+#46 1.653      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 9.0 MB/s eta 0:00:00
+#46 1.724 Collecting colorama>=0.3.9
+#46 1.735   Downloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+#46 1.769 Collecting executing>=0.3.1
+#46 1.780   Downloading executing-2.1.0-py2.py3-none-any.whl (25 kB)
+#46 1.815 Collecting asttokens>=2.0.1
+#46 1.827   Downloading asttokens-2.4.1-py2.py3-none-any.whl (27 kB)
+#46 1.867 Requirement already satisfied: python-dotenv>=0.21.0 in /usr/local/lib/python3.10/dist-packages (from pydantic-settings<3.0.0,>=2.0.2->wsi-service==0.14.0) (1.0.1)
+#46 1.873 WARNING: pydantic 2.6.1 does not provide the extra 'dotenv'
+#46 1.875 Requirement already satisfied: pydantic-core==2.16.2 in /usr/local/lib/python3.10/dist-packages (from pydantic[dotenv]<3.0.0,>=2.0.0->wsi-service==0.14.0) (2.16.2)
+#46 1.876 Requirement already satisfied: annotated-types>=0.4.0 in /usr/local/lib/python3.10/dist-packages (from pydantic[dotenv]<3.0.0,>=2.0.0->wsi-service==0.14.0) (0.6.0)
+#46 1.901 Requirement already satisfied: charset-normalizer<4,>=2 in /usr/local/lib/python3.10/dist-packages (from requests<3.0.0,>=2.27.1->wsi-service==0.14.0) (3.3.2)
+#46 1.902 Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.10/dist-packages (from requests<3.0.0,>=2.27.1->wsi-service==0.14.0) (2.2.0)
+#46 1.951 Requirement already satisfied: networkx>=2.8 in /usr/local/lib/python3.10/dist-packages (from scikit-image<0.23.0,>=0.22.0->wsi-service-plugin-tifffile==0.4.3) (3.2.1)
+#46 1.952 Requirement already satisfied: scipy>=1.8 in /usr/local/lib/python3.10/dist-packages (from scikit-image<0.23.0,>=0.22.0->wsi-service-plugin-tifffile==0.4.3) (1.12.0)
+#46 1.953 Requirement already satisfied: imageio>=2.27 in /usr/local/lib/python3.10/dist-packages (from scikit-image<0.23.0,>=0.22.0->wsi-service-plugin-tifffile==0.4.3) (2.34.0)
+#46 1.953 Requirement already satisfied: packaging>=21 in /usr/local/lib/python3.10/dist-packages (from scikit-image<0.23.0,>=0.22.0->wsi-service-plugin-tifffile==0.4.3) (23.2)
+#46 1.955 Requirement already satisfied: lazy_loader>=0.3 in /usr/local/lib/python3.10/dist-packages (from scikit-image<0.23.0,>=0.22.0->wsi-service-plugin-tifffile==0.4.3) (0.3)
+#46 1.976 Requirement already satisfied: zarr>=2.11.0 in /usr/local/lib/python3.10/dist-packages (from tiffslide<3.0.0,>=2.0.0->wsi-service-plugin-tiffslide==0.2.3) (2.16.1)
+#46 1.977 Requirement already satisfied: fsspec!=2022.11.0,!=2023.1.0 in /usr/local/lib/python3.10/dist-packages (from tiffslide<3.0.0,>=2.0.0->wsi-service-plugin-tiffslide==0.2.3) (2024.2.0)
+#46 1.991 Requirement already satisfied: click>=7.0 in /usr/local/lib/python3.10/dist-packages (from uvicorn<0.28.0,>=0.27.0->wsi-service==0.14.0) (8.1.7)
+#46 2.013 Requirement already satisfied: dicomweb-client<0.60.0,>=0.59.1 in /usr/local/lib/python3.10/dist-packages (from wsidicom<0.18.0,>=0.17.0->wsi-service-plugin-wsidicom==0.4.4) (0.59.1)
+#46 2.013 Requirement already satisfied: pydicom>=2.1.0 in /usr/local/lib/python3.10/dist-packages (from wsidicom<0.18.0,>=0.17.0->wsi-service-plugin-wsidicom==0.4.4) (2.4.4)
+#46 2.069 Requirement already satisfied: pycparser in /usr/local/lib/python3.10/dist-packages (from cffi>=1.12->cryptography<43.0.0,>=42.0.0->wsi-service==0.14.0) (2.21)
+#46 2.092 Requirement already satisfied: retrying>=1.3.3 in /usr/local/lib/python3.10/dist-packages (from dicomweb-client<0.60.0,>=0.59.1->wsidicom<0.18.0,>=0.17.0->wsi-service-plugin-wsidicom==0.4.4) (1.3.4)
+#46 2.320 Requirement already satisfied: exceptiongroup>=1.0.2 in /usr/local/lib/python3.10/dist-packages (from anyio->httpx<0.27.0,>=0.26.0->wsi-service==0.14.0) (1.2.0)
+#46 2.363 Requirement already satisfied: asciitree in /usr/local/lib/python3.10/dist-packages (from zarr>=2.11.0->tiffslide<3.0.0,>=2.0.0->wsi-service-plugin-tiffslide==0.2.3) (0.3.3)
+#46 2.364 Requirement already satisfied: fasteners in /usr/local/lib/python3.10/dist-packages (from zarr>=2.11.0->tiffslide<3.0.0,>=2.0.0->wsi-service-plugin-tiffslide==0.2.3) (0.19)
+#46 2.365 Requirement already satisfied: numcodecs>=0.10.0 in /usr/local/lib/python3.10/dist-packages (from zarr>=2.11.0->tiffslide<3.0.0,>=2.0.0->wsi-service-plugin-tiffslide==0.2.3) (0.12.1)
+#46 2.474 Installing collected packages: wsi-service-plugin-pil, pygments, executing, colorama, asttokens, wsi-service-plugin-openslide, starlette, icecream, wsi-service-plugin-tifffile, fastapi, wsi-service-plugin-wsidicom, wsi-service-plugin-tiffslide, wsi-service
+#46 3.573 Successfully installed asttokens-2.4.1 colorama-0.4.6 executing-2.1.0 fastapi-0.108.0 icecream-2.1.3 pygments-2.18.0 starlette-0.32.0.post1 wsi-service-0.14.0 wsi-service-plugin-openslide-1.4.2 wsi-service-plugin-pil-0.4.1 wsi-service-plugin-tifffile-0.4.3 wsi-service-plugin-tiffslide-0.2.3 wsi-service-plugin-wsidicom-0.4.4
+#46 3.573 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+#46 DONE 3.7s
+
+#47 [wsi_service wsi_service_intermediate 23/23] RUN mkdir /data
+#47 DONE 0.3s
+
+#48 [wsi_service wsi_service_production 3/7] RUN adduser --disabled-password --gecos '' appuser   && mkdir /artifacts && chown appuser:appuser /artifacts   && mkdir -p /opt/app/bin && chown appuser:appuser /opt/app/bin
+#48 CACHED
+
+#49 [wsi_service wsi_service_production 2/7] RUN apt-get update   && apt-get install --no-install-recommends -y python3 python3-pip python3-packaging   && rm -rf /var/lib/apt/lists/*
+#49 CACHED
+
+#50 [wsi_service wsi_service_production 4/7] COPY --chown=appuser --from=wsi_service_build /openslide_deps/* /usr/lib/x86_64-linux-gnu/
+#50 CACHED
+
+#51 [wsi_service wsi_service_production 5/7] COPY --chown=appuser --from=wsi_service_intermediate /usr/local/lib/python3.10/dist-packages/ /usr/local/lib/python3.10/dist-packages/
+#51 DONE 2.8s
+
+#52 [wsi_service wsi_service_production 6/7] COPY --chown=appuser --from=wsi_service_intermediate /data /data
+#52 DONE 0.1s
+
+#53 [wsi_service wsi_service_production 7/7] WORKDIR /usr/local/lib/python3.10/dist-packages/wsi_service
+#53 DONE 0.0s
+
+#54 [wsi_service] exporting to image
+#54 exporting layers
+#54 exporting layers 2.8s done
+#54 writing image sha256:454cf87f33af3050e24e16002827090f5bf866bb632851f13c1849a09cc38578 done
+#54 naming to docker.io/library/wsi-service-wsi_service done
+#54 DONE 2.9s
+
+#55 [wsi_service] resolving provenance for metadata file
+#55 DONE 0.0s
+ Container wsi-service-wsi_service-1  Recreate
+ Container wsi-service-wsi_service-1  Recreated
+Attaching to wsi_service-1
+wsi_service-1  | INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+wsi_service-1  | INFO:     Started parent process [1]
+wsi_service-1  | ic| settings.local_mode: 'wsi_service.simple_mapper:SimpleMapper'
+wsi_service-1  |     type(settings.local_mode): <class 'str'>
+wsi_service-1  | ic| 'refreshing mapper'
+wsi_service-1  | ic| 'inside lock'
+wsi_service-1  | ic| force_refresh: False
+wsi_service-1  |     data_dir_changed: False
+wsi_service-1  |     os.path.exists('local_mapper.p'): False
+wsi_service-1  | ic| 'Starting directory Scan'
+wsi_service-1  | ic| data: {'case_map': {'0044c1c0c7575d668144816a56dced0c': CaseLocalMapper(id='0044c1c0c7575d668144816a56dced0c', local_id='case_5', slides=['48c75eeb2bbe53308274e46e6fdbe0a6', '7950d468a9c65d4dbed924a59ccae5ad', '43ce3fc1c16755608967675f07034823', '7b3bf4c34c3d557aae6b46964b4bbca5']),
+wsi_service-1  |                         '6bfd413e2fa25f0e9170c7711d6adef3': CaseLocalMapper(id='6bfd413e2fa25f0e9170c7711d6adef3', local_id='case_3', slides=['bfde8429ca1a531fb9c0fa83004d987d']),
+wsi_service-1  |                         '732fa09a4f4152e7bc32bd0a902d0654': CaseLocalMapper(id='732fa09a4f4152e7bc32bd0a902d0654', local_id='case_1', slides=['06173a98f35c5447a198cb4fe53692ce']),
+wsi_service-1  |                         '854ed725671059ada4cdc28a4e80d26e': CaseLocalMapper(id='854ed725671059ada4cdc28a4e80d26e', local_id='case_2', slides=['d93ffdab90ac51e082a76d423294191c']),
+wsi_service-1  |                         '893fdd6027485d5b8182c0f56705f108': CaseLocalMapper(id='893fdd6027485d5b8182c0f56705f108', local_id='case_4', slides=['84c35efb4bfc57ca8a49e4d9d4969d97'])},
+wsi_service-1  |            'data_dir': '/data',
+wsi_service-1  |            'slide_map': {'06173a98f35c5447a198cb4fe53692ce': SlideLocalMapper(id='06173a98f35c5447a198cb4fe53692ce', local_id='f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_storage=SlideStorage(slide_id='06173a98f35c5447a198cb4fe53692ce', storage_type='fs', storage_addresses=[StorageAddress(address='case_1/f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_id='06173a98f35c5447a198cb4fe53692ce', main_address=True, storage_address_id='06173a98f35c5447a198cb4fe53692ce')])),
+wsi_service-1  |                          '43ce3fc1c16755608967675f07034823': SlideLocalMapper(id='43ce3fc1c16755608967675f07034823', local_id='02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_storage=SlideStorage(slide_id='43ce3fc1c16755608967675f07034823', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_id='43ce3fc1c16755608967675f07034823', main_address=True, storage_address_id='43ce3fc1c16755608967675f07034823')])),
+wsi_service-1  |                          '48c75eeb2bbe53308274e46e6fdbe0a6': SlideLocalMapper(id='48c75eeb2bbe53308274e46e6fdbe0a6', local_id='ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_storage=SlideStorage(slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', main_address=True, storage_address_id='48c75eeb2bbe53308274e46e6fdbe0a6')])),
+wsi_service-1  |                          '7950d468a9c65d4dbed924a59ccae5ad': SlideLocalMapper(id='7950d468a9c65d4dbed924a59ccae5ad', local_id='6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_storage=SlideStorage(slide_id='7950d468a9c65d4dbed924a59ccae5ad', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_id='7950d468a9c65d4dbed924a59ccae5ad', main_address=True, storage_address_id='7950d468a9c65d4dbed924a59ccae5ad')])),
+wsi_service-1  |                          '7b3bf4c34c3d557aae6b46964b4bbca5': SlideLocalMapper(id='7b3bf4c34c3d557aae6b46964b4bbca5', local_id='68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_storage=SlideStorage(slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', main_address=True, storage_address_id='7b3bf4c34c3d557aae6b46964b4bbca5')])),
+wsi_service-1  |                          '84c35efb4bfc57ca8a49e4d9d4969d97': SlideLocalMapper(id='84c35efb4bfc57ca8a49e4d9d4969d97', local_id='3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_storage=SlideStorage(slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', storage_type='fs', storage_addresses=[StorageAddress(address='case_4/3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', main_address=True, storage_address_id='84c35efb4bfc57ca8a49e4d9d4969d97')])),
+wsi_service-1  |                          'bfde8429ca1a531fb9c0fa83004d987d': SlideLocalMapper(id='bfde8429ca1a531fb9c0fa83004d987d', local_id='2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_storage=SlideStorage(slide_id='bfde8429ca1a531fb9c0fa83004d987d', storage_type='fs', storage_addresses=[StorageAddress(address='case_3/2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_id='bfde8429ca1a531fb9c0fa83004d987d', main_address=True, storage_address_id='bfde8429ca1a531fb9c0fa83004d987d')])),
+wsi_service-1  |                          'd93ffdab90ac51e082a76d423294191c': SlideLocalMapper(id='d93ffdab90ac51e082a76d423294191c', local_id='509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_storage=SlideStorage(slide_id='d93ffdab90ac51e082a76d423294191c', storage_type='fs', storage_addresses=[StorageAddress(address='case_2/509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_id='d93ffdab90ac51e082a76d423294191c', main_address=True, storage_address_id='d93ffdab90ac51e082a76d423294191c')]))}}
+wsi_service-1  | ic| settings.local_mode: 'wsi_service.simple_mapper:SimpleMapper'
+wsi_service-1  |     type(settings.local_mode): <class 'str'>
+wsi_service-1  | ic| 'Starting load'
+wsi_service-1  | ic| data: {'case_map': {'0044c1c0c7575d668144816a56dced0c': CaseLocalMapper(id='0044c1c0c7575d668144816a56dced0c', local_id='case_5', slides=['48c75eeb2bbe53308274e46e6fdbe0a6', '7950d468a9c65d4dbed924a59ccae5ad', '43ce3fc1c16755608967675f07034823', '7b3bf4c34c3d557aae6b46964b4bbca5']),
+wsi_service-1  |                         '6bfd413e2fa25f0e9170c7711d6adef3': CaseLocalMapper(id='6bfd413e2fa25f0e9170c7711d6adef3', local_id='case_3', slides=['bfde8429ca1a531fb9c0fa83004d987d']),
+wsi_service-1  |                         '732fa09a4f4152e7bc32bd0a902d0654': CaseLocalMapper(id='732fa09a4f4152e7bc32bd0a902d0654', local_id='case_1', slides=['06173a98f35c5447a198cb4fe53692ce']),
+wsi_service-1  |                         '854ed725671059ada4cdc28a4e80d26e': CaseLocalMapper(id='854ed725671059ada4cdc28a4e80d26e', local_id='case_2', slides=['d93ffdab90ac51e082a76d423294191c']),
+wsi_service-1  |                         '893fdd6027485d5b8182c0f56705f108': CaseLocalMapper(id='893fdd6027485d5b8182c0f56705f108', local_id='case_4', slides=['84c35efb4bfc57ca8a49e4d9d4969d97'])},
+wsi_service-1  |            'data_dir': '/data',
+wsi_service-1  |            'slide_map': {'06173a98f35c5447a198cb4fe53692ce': SlideLocalMapper(id='06173a98f35c5447a198cb4fe53692ce', local_id='f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_storage=SlideStorage(slide_id='06173a98f35c5447a198cb4fe53692ce', storage_type='fs', storage_addresses=[StorageAddress(address='case_1/f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_id='06173a98f35c5447a198cb4fe53692ce', main_address=True, storage_address_id='06173a98f35c5447a198cb4fe53692ce')])),
+wsi_service-1  |                          '43ce3fc1c16755608967675f07034823': SlideLocalMapper(id='43ce3fc1c16755608967675f07034823', local_id='02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_storage=SlideStorage(slide_id='43ce3fc1c16755608967675f07034823', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_id='43ce3fc1c16755608967675f07034823', main_address=True, storage_address_id='43ce3fc1c16755608967675f07034823')])),
+wsi_service-1  |                          '48c75eeb2bbe53308274e46e6fdbe0a6': SlideLocalMapper(id='48c75eeb2bbe53308274e46e6fdbe0a6', local_id='ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_storage=SlideStorage(slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', main_address=True, storage_address_id='48c75eeb2bbe53308274e46e6fdbe0a6')])),
+wsi_service-1  |                          '7950d468a9c65d4dbed924a59ccae5ad': SlideLocalMapper(id='7950d468a9c65d4dbed924a59ccae5ad', local_id='6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_storage=SlideStorage(slide_id='7950d468a9c65d4dbed924a59ccae5ad', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_id='7950d468a9c65d4dbed924a59ccae5ad', main_address=True, storage_address_id='7950d468a9c65d4dbed924a59ccae5ad')])),
+wsi_service-1  |                          '7b3bf4c34c3d557aae6b46964b4bbca5': SlideLocalMapper(id='7b3bf4c34c3d557aae6b46964b4bbca5', local_id='68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_storage=SlideStorage(slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', main_address=True, storage_address_id='7b3bf4c34c3d557aae6b46964b4bbca5')])),
+wsi_service-1  |                          '84c35efb4bfc57ca8a49e4d9d4969d97': SlideLocalMapper(id='84c35efb4bfc57ca8a49e4d9d4969d97', local_id='3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_storage=SlideStorage(slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', storage_type='fs', storage_addresses=[StorageAddress(address='case_4/3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', main_address=True, storage_address_id='84c35efb4bfc57ca8a49e4d9d4969d97')])),
+wsi_service-1  |                          'bfde8429ca1a531fb9c0fa83004d987d': SlideLocalMapper(id='bfde8429ca1a531fb9c0fa83004d987d', local_id='2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_storage=SlideStorage(slide_id='bfde8429ca1a531fb9c0fa83004d987d', storage_type='fs', storage_addresses=[StorageAddress(address='case_3/2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_id='bfde8429ca1a531fb9c0fa83004d987d', main_address=True, storage_address_id='bfde8429ca1a531fb9c0fa83004d987d')])),
+wsi_service-1  |                          'd93ffdab90ac51e082a76d423294191c': SlideLocalMapper(id='d93ffdab90ac51e082a76d423294191c', local_id='509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_storage=SlideStorage(slide_id='d93ffdab90ac51e082a76d423294191c', storage_type='fs', storage_addresses=[StorageAddress(address='case_2/509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_id='d93ffdab90ac51e082a76d423294191c', main_address=True, storage_address_id='d93ffdab90ac51e082a76d423294191c')]))}}
+wsi_service-1  | ic| 'refreshing mapper'
+wsi_service-1  | ic| local_mode.py:12 in add_routes_local_mode() at 12:01:19.490
+wsi_service-1  | ic| 'inside lock'
+wsi_service-1  | ic| force_refresh: False
+wsi_service-1  |     data_dir_changed: False
+wsi_service-1  |     os.path.exists('local_mapper.p'): True
+wsi_service-1  | ic| 'Starting load'
+wsi_service-1  | ic| settings.enable_viewer_routes: True
+wsi_service-1  |     type(settings.enable_viewer_routes): <class 'bool'>
+wsi_service-1  | ic| data: {'case_map': {'0044c1c0c7575d668144816a56dced0c': CaseLocalMapper(id='0044c1c0c7575d668144816a56dced0c', local_id='case_5', slides=['48c75eeb2bbe53308274e46e6fdbe0a6', '7950d468a9c65d4dbed924a59ccae5ad', '43ce3fc1c16755608967675f07034823', '7b3bf4c34c3d557aae6b46964b4bbca5']),
+wsi_service-1  |                         '6bfd413e2fa25f0e9170c7711d6adef3': CaseLocalMapper(id='6bfd413e2fa25f0e9170c7711d6adef3', local_id='case_3', slides=['bfde8429ca1a531fb9c0fa83004d987d']),
+wsi_service-1  |                         '732fa09a4f4152e7bc32bd0a902d0654': CaseLocalMapper(id='732fa09a4f4152e7bc32bd0a902d0654', local_id='case_1', slides=['06173a98f35c5447a198cb4fe53692ce']),
+wsi_service-1  |                         '854ed725671059ada4cdc28a4e80d26e': CaseLocalMapper(id='854ed725671059ada4cdc28a4e80d26e', local_id='case_2', slides=['d93ffdab90ac51e082a76d423294191c']),
+wsi_service-1  |                         '893fdd6027485d5b8182c0f56705f108': CaseLocalMapper(id='893fdd6027485d5b8182c0f56705f108', local_id='case_4', slides=['84c35efb4bfc57ca8a49e4d9d4969d97'])},
+wsi_service-1  |            'data_dir': '/data',
+wsi_service-1  |            'slide_map': {'06173a98f35c5447a198cb4fe53692ce': SlideLocalMapper(id='06173a98f35c5447a198cb4fe53692ce', local_id='f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_storage=SlideStorage(slide_id='06173a98f35c5447a198cb4fe53692ce', storage_type='fs', storage_addresses=[StorageAddress(address='case_1/f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_id='06173a98f35c5447a198cb4fe53692ce', main_address=True, storage_address_id='06173a98f35c5447a198cb4fe53692ce')])),
+wsi_service-1  |                          '43ce3fc1c16755608967675f07034823': SlideLocalMapper(id='43ce3fc1c16755608967675f07034823', local_id='02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_storage=SlideStorage(slide_id='43ce3fc1c16755608967675f07034823', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_id='43ce3fc1c16755608967675f07034823', main_address=True, storage_address_id='43ce3fc1c16755608967675f07034823')])),
+wsi_service-1  |                          '48c75eeb2bbe53308274e46e6fdbe0a6': SlideLocalMapper(id='48c75eeb2bbe53308274e46e6fdbe0a6', local_id='ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_storage=SlideStorage(slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', main_address=True, storage_address_id='48c75eeb2bbe53308274e46e6fdbe0a6')])),
+wsi_service-1  |                          '7950d468a9c65d4dbed924a59ccae5ad': SlideLocalMapper(id='7950d468a9c65d4dbed924a59ccae5ad', local_id='6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_storage=SlideStorage(slide_id='7950d468a9c65d4dbed924a59ccae5ad', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_id='7950d468a9c65d4dbed924a59ccae5ad', main_address=True, storage_address_id='7950d468a9c65d4dbed924a59ccae5ad')])),
+wsi_service-1  |                          '7b3bf4c34c3d557aae6b46964b4bbca5': SlideLocalMapper(id='7b3bf4c34c3d557aae6b46964b4bbca5', local_id='68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_storage=SlideStorage(slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', main_address=True, storage_address_id='7b3bf4c34c3d557aae6b46964b4bbca5')])),
+wsi_service-1  |                          '84c35efb4bfc57ca8a49e4d9d4969d97': SlideLocalMapper(id='84c35efb4bfc57ca8a49e4d9d4969d97', local_id='3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_storage=SlideStorage(slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', storage_type='fs', storage_addresses=[StorageAddress(address='case_4/3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', main_address=True, storage_address_id='84c35efb4bfc57ca8a49e4d9d4969d97')])),
+wsi_service-1  |                          'bfde8429ca1a531fb9c0fa83004d987d': SlideLocalMapper(id='bfde8429ca1a531fb9c0fa83004d987d', local_id='2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_storage=SlideStorage(slide_id='bfde8429ca1a531fb9c0fa83004d987d', storage_type='fs', storage_addresses=[StorageAddress(address='case_3/2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_id='bfde8429ca1a531fb9c0fa83004d987d', main_address=True, storage_address_id='bfde8429ca1a531fb9c0fa83004d987d')])),
+wsi_service-1  |                          'd93ffdab90ac51e082a76d423294191c': SlideLocalMapper(id='d93ffdab90ac51e082a76d423294191c', local_id='509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_storage=SlideStorage(slide_id='d93ffdab90ac51e082a76d423294191c', storage_type='fs', storage_addresses=[StorageAddress(address='case_2/509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_id='d93ffdab90ac51e082a76d423294191c', main_address=True, storage_address_id='d93ffdab90ac51e082a76d423294191c')]))}}
+wsi_service-1  | ic| local_mode.py:12 in add_routes_local_mode() at 12:01:19.622
+wsi_service-1  | ic| settings.enable_viewer_routes: True
+wsi_service-1  |     type(settings.enable_viewer_routes): <class 'bool'>
+wsi_service-1  | INFO:     Started server process [13]
+wsi_service-1  | INFO:     Waiting for application startup.
+wsi_service-1  | INFO:     Application startup complete.
+wsi_service-1  | INFO:     Started server process [11]
+wsi_service-1  | INFO:     Waiting for application startup.
+wsi_service-1  | INFO:     Application startup complete.
+wsi_service-1  | ic| settings.local_mode: 'wsi_service.simple_mapper:SimpleMapper'
+wsi_service-1  |     type(settings.local_mode): <class 'str'>
+wsi_service-1  | ic| settings.local_mode: 'wsi_service.simple_mapper:SimpleMapper'
+wsi_service-1  |     type(settings.local_mode): <class 'str'>
+wsi_service-1  | ic| 'refreshing mapper'
+wsi_service-1  | ic| 'inside lock'
+wsi_service-1  | ic| force_refresh: False
+wsi_service-1  |     data_dir_changed: False
+wsi_service-1  |     os.ic| settings.local_mode: 'wsi_service.simple_mapper:SimpleMapper'
+wsi_service-1  |     type(settings.local_mode): <class 'str'>
+wsi_service-1  | path.exists('local_mapper.pic| 'refreshing mapper'
+wsi_service-1  | '): True
+wsi_service-1  | ic| 'Starting load'
+wsi_service-1  | ic| data: {'case_map': {'0044c1c0c7575d668144816a56dced0c': CaseLocalMapper(id='0044c1c0c7575d668144816a56dced0c', local_id='case_5', slides=['48c75eeb2bbe53308274e46e6fdbe0a6', '7950d468a9c65d4dbed924a59ccae5ad', '43ce3fc1c16755608967675f07034823', '7b3bf4c34c3d557aae6b46964b4bbca5']),
+wsi_service-1  |                         '6bfd413e2fa25f0e9170c7711d6adef3': CaseLocalMapper(id='6bfd413e2fa25f0e9170c7711d6adef3', local_id='case_3', slides=['bfde8429ca1a531fb9c0fa83004d987d']),
+wsi_service-1  |                         '732fa09a4f4152e7bc32bd0a902d0654': CaseLocalMapper(id='732fa09a4f4152e7bc32bd0a902d0654', local_id='case_1', slides=['06173a98f35c5447a198cb4fe53692ce'ic]|) settings.,
+wsi_service-1  | local_mode: 'wsi_service.simple_mapper:SimpleMapper                        ''
+wsi_service-1  | 854ed725671059ada4cdc28a4e80d26e    'type(: CaseLocalMapper(settings.idlocal_mode): ='854ed725671059ada4cdc28a4e80d26e<', class 'str'local_id=>'case_2', slides=['d93ffdab90ac51e082a76d423294191c']),
+wsi_service-1  |                         '893fdd6027485d5b8182c0f56705f108': CaseLocalMapper(id='893fdd6027485d5b8182c0f56705f108', local_id='case_4', slides=['84c35efb4bfc57ca8a49e4d9d4969d97']
+wsi_service-1  | )},
+wsi_service-1  |            'data_dir': '/data',
+wsi_service-1  |            'slide_map': {'06173a98f35c5447a198cb4fe53692ce': SlideLocalMapper(id='06173a98f35c5447a198cb4fe53692ce', local_id='f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_storage=SlideStorage(slide_id='06173a98f35c5447a198cb4fe53692ce', storage_type='fs',ic| 'refreshing mapper'
+wsi_service-1  |  storage_addresses=[StorageAddress(address='case_1/f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_id='06173a98f35c5447a198cb4fe53692ce', main_address=True, storage_address_id='06173a98f35c5447a198cb4fe53692ce')])),
+wsi_service-1  |                          '43ce3fc1c16755608967675f07034823': SlideLocalMapper(id='43ce3fc1c16755608967675f07034823', local_id='02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_storage=SlideStorage(slide_id='43ce3fc1c16755608967675f07034823', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_id='43ce3fc1c16755608967675f07034823', main_address=True, storage_address_id='43ce3fc1c16755608967675f07034823')])),
+wsi_service-1  |                          '48c75eeb2bbe53308274e46e6fdbe0a6': SlideLocalMapper(id='48c75eeb2bbe53308274e46e6fdbe0a6', local_id='ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_storage=SlideStorage(slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', main_address=True, storage_address_id='48c75eeb2bbe53308274e46e6fdbe0a6')])),
+wsi_service-1  |                          '7950d468a9c65d4dbed924a59ccae5ad': SlideLocalMapper(id='7950d468a9c65d4dbed924a59ccae5ad', local_id='6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_storage=SlideStorage(slide_id='7950d468a9c65d4dbed924a59ccae5ad', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_id='7950d468a9c65d4dbed924a59ccae5ad', main_address=True, storage_address_id='7950d468a9c65d4dbed924a59ccae5ad')])),
+wsi_service-1  |                          '7b3bf4c34c3d557aae6b46964b4bbca5': SlideLocalMapper(id='7b3bf4c34c3d557aae6b46964b4bbca5', local_id='68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_storage=SlideStorage(slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', main_address=True, storage_address_id='7b3bf4c34c3d557aae6b46964b4bbca5')])),
+wsi_service-1  |                          '84c35efb4bfc57ca8a49e4d9d4969d97': SlideLocalMapper(id='84c35efb4bfc57ca8a49e4d9d4969d97', local_id='3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_storage=SlideStorage(slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', storage_type='fs', storage_addresses=[StorageAddress(address='case_4/3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', main_address=True, storage_address_id='84c35efb4bfc57ca8a49e4d9d4969d97')])),
+wsi_service-1  |                          'bfde8429ca1a531fb9c0fa83004d987d': SlideLocalMapper(id='bfde8429ca1a531fb9c0fa83004d987d', local_id='2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_storage=SlideStorage(slide_id='bfde8429ca1a531fb9c0fa83004d987d', storage_type='fs', storage_addresses=[StorageAddress(address='case_3/2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_id='bfde8429ca1a531fb9c0fa83004d987d', main_address=True, storage_address_id='bfde8429ca1a531fb9c0fa83004d987d')])),
+wsi_service-1  |                          'd93ffdab90ac51e082a76d423294191c': SlideLocalMapper(id='d93ffdab90ac51e082a76d423294191c', local_id='509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_storage=SlideStorage(slide_id='d93ffdab90ac51e082a76d423294191c', storage_type='fs', storage_addresses=[StorageAddress(address='case_2/509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_id='d93ffdab90ac51e082a76d423294191c', main_address=True, storage_address_id='d93ffdab90ac51e082a76d423294191c')]))}}
+wsi_service-1  | ic| local_mode.py:12 in add_routes_local_mode() at 12:01:19.855
+wsi_service-1  | ic| 'inside lock'
+wsi_service-1  | ic| settings.enable_viewer_routes: True
+wsi_service-1  |     type(settings.enable_viewer_routes): <class 'bool'>
+wsi_service-1  | ic| force_refresh: False
+wsi_service-1  |     data_dir_changed: False
+wsi_service-1  |     os.path.exists('local_mapper.p'): True
+wsi_service-1  | ic| 'Starting load'
+wsi_service-1  | ic| 'refreshing mapper'
+wsi_service-1  | ic| settings.local_mode: 'wsi_service.simple_mapper:SimpleMapper'
+wsi_service-1  |     type(settings.local_mode): <class 'str'>
+wsi_service-1  | ic| data: {'case_map': {'0044c1c0c7575d668144816a56dced0c': CaseLocalMapper(id='0044c1c0c7575d668144816a56dced0c', local_id='case_5', slides=['48c75eeb2bbe53308274e46e6fdbe0a6', '7950d468a9c65d4dbed924a59ccae5ad', '43ce3fc1c16755608967675f07034823', '7b3bf4c34c3d557aae6b46964b4bbca5']),
+wsi_service-1  |                         '6bfd413e2fa25f0e9170c7711d6adef3': CaseLocalMapper(id='6bfd413e2fa25f0e9170c7711d6adef3', local_id='case_3', slides=['bfde8429ca1a531fb9c0fa83004d987d']),
+wsi_service-1  |                         '732fa09a4f4152e7bc32bd0a902d0654': CaseLocalMapper(id='732fa09a4f4152e7bc32bd0a902d0654', local_id='case_1', slides=['06173a98f35c5447a198cb4fe53692ce']),
+wsi_service-1  |                         '854ed725671059ada4cdc28a4e80d26e': CaseLocalMapper(id='854ed725671059ada4cdc28a4e80d26e', local_id='case_2', slides=['d93ffdab90ac51e082a76d423294191c']),
+wsi_service-1  |                         '893fdd6027485d5b8182c0f56705f108': CaseLocalMapper(id='893fdd6027485d5b8182c0f56705f108', local_id='case_4', slides=['84c35efb4bfc57ca8a49e4d9d4969d97'])},
+wsi_service-1  |            'data_dir': '/data',
+wsi_service-1  |            'slide_map': {'06173a98f35c5447a198cb4fe53692ce': SlideLocalMapper(id='06173a98f35c5447a198cb4fe53692ce', local_id='f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_storage=SlideStorage(slide_id='06173a98f35c5447a198cb4fe53692ce', storage_type='fs', storage_addresses=[StorageAddress(address='case_1/f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_id='06173a98f35c5447a198cb4fe53692ce', main_address=True, storage_address_id='06173a98f35c5447a198cb4fe53692ce')])),
+wsi_service-1  |                          '43ce3fc1c16755608967675f07034823': SlideLocalMapper(id='43ce3fc1c16755608967675f07034823', local_id='02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_storage=SlideStorage(slide_id='43ce3fc1c16755608967675f07034823', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_id='43ce3fc1c16755608967675f07034823', main_address=True, storage_address_id='43ce3fc1c16755608967675f07034823')])),
+wsi_service-1  |                          '48c75eeb2bbe53308274e46e6fdbe0a6': SlideLocalMapper(id='48c75eeb2bbe53308274e46e6fdbe0a6', local_id='ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_storage=SlideStorage(slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', main_address=True, storage_address_id='48c75eeb2bbe53308274e46e6fdbe0a6')])),
+wsi_service-1  |                          '7950d468a9c65d4dbed924a59ccae5ad': SlideLocalMapper(id='7950d468a9c65d4dbed924a59ccae5ad', local_id='6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_storage=SlideStorage(slide_id='7950d468a9c65d4dbed924a59ccae5ad', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_id='7950d468a9c65d4dbed924a59ccae5ad', main_address=True, storage_address_id='7950d468a9c65d4dbed924a59ccae5ad')])),
+wsi_service-1  |                          '7b3bf4c34c3d557aae6b46964b4bbca5': SlideLocalMapper(id='7b3bf4c34c3d557aae6b46964b4bbca5', local_id='68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_storage=SlideStorage(slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', main_address=True, storage_address_id='7b3bf4c34c3d557aae6b46964b4bbca5')])),
+wsi_service-1  |                          '84c35efb4bfc57ca8a49e4d9d4969d97': SlideLocalMapper(id='84c35efb4bfc57ca8a49e4d9d4969d97', local_id='3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_storage=SlideStorage(slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', storage_type='fs', storage_addresses=[StorageAddress(address='case_4/3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', main_address=True, storage_address_id='84c35efb4bfc57ca8a49e4d9d4969d97')])),
+wsi_service-1  |                          'bfde8429ca1a531fb9c0fa83004d987d': SlideLocalMapper(id='bfde8429ca1a531fb9c0fa83004d987d', local_id='2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_storage=SlideStorage(slide_id='bfde8429ca1a531fb9c0fa83004d987d', storage_type='fs', storage_addresses=[StorageAddress(address='case_3/2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_id='bfde8429ca1a531fb9c0fa83004d987d', main_address=True, storage_address_id='bfde8429ca1a531fb9c0fa83004d987d')])),
+wsi_service-1  |                          'd93ffdab90ac51e082a76d423294191c': SlideLocalMapper(id='d93ffdab90ac51e082a76d423294191c', local_id='509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_storage=SlideStorage(slide_id='d93ffdab90ac51e082a76d423294191c', storage_type='fs', storage_addresses=[StorageAddress(address='case_2/509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_id='d93ffdab90ac51e082a76d423294191c', main_address=True, storage_address_id='d93ffdab90ac51e082a76d423294191c')]))}}
+wsi_service-1  | ic| local_mode.py:12 in add_routes_local_mode() at 12:01:19.910
+wsi_service-1  | INFO:     Started server process [12]
+wsi_service-1  | INFO:     Waiting for application startup.
+wsi_service-1  | INFO:     Application startup complete.
+wsi_service-1  | ic| settings.enable_viewer_routes: True
+wsi_service-1  |     type(settings.enable_viewer_routes): <class 'bool'>
+wsi_service-1  | ic| 'refreshing mapper'
+wsi_service-1  | ic| 'inside lock'
+wsi_service-1  | ic| settings.local_mode: 'wsi_service.simple_mapper:SimpleMapper'
+wsi_service-1  |     type(settings.local_mode): <class 'str'>
+wsi_service-1  | ic| force_refresh: False
+wsi_service-1  |     data_dir_changed: False
+wsi_service-1  |     os.path.exists('local_mapper.p'): True
+wsi_service-1  | ic| 'Starting load'
+wsi_service-1  | ic| data: {'case_map': {'0044c1c0c7575d668144816a56dced0c': CaseLocalMapper(id='0044c1c0c7575d668144816a56dced0c', local_id='case_5', slides=['48c75eeb2bbe53308274e46e6fdbe0a6', '7950d468a9c65d4dbed924a59ccae5ad', '43ce3fc1c16755608967675f07034823', '7b3bf4c34c3d557aae6b46964b4bbca5']),
+wsi_service-1  |                         '6bfd413e2fa25f0e9170c7711d6adef3': CaseLocalMapper(id='6bfd413e2fa25f0e9170c7711d6adef3', local_id='case_3', slides=['bfde8429ca1a531fb9c0fa83004d987d']),
+wsi_service-1  |                         '732fa09a4f4152e7bc32bd0a902d0654': CaseLocalMapper(id='732fa09a4f4152e7bc32bd0a902d0654', local_id='case_1', slides=['06173a98f35c5447a198cb4fe53692ce']),
+wsi_service-1  |                         '854ed725671059ada4cdc28a4e80d26e': CaseLocalMapper(id='854ed725671059ada4cdc28a4e80d26e', local_id='case_2', slides=['d93ffdab90ac51e082a76d423294191c']),
+wsi_service-1  |                         '893fdd6027485d5b8182c0f56705f108': CaseLocalMapper(id='893fdd6027485d5b8182c0f56705f108', local_id='case_4', slides=['84c35efb4bfc57ca8a49e4d9d4969d97'])},
+wsi_service-1  |            'data_dir': '/data',
+wsi_service-1  |            'slide_map': {'06173a98f35c5447a198cb4fe53692ce': SlideLocalMapper(id='06173a98f35c5447a198cb4fe53692ce', local_id='f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_storage=SlideStorage(slide_id='06173a98f35c5447a198cb4fe53692ce', storage_type='fs', storage_addresses=[StorageAddress(address='case_1/f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_id='06173a98f35c5447a198cb4fe53692ce', main_address=True, storage_address_id='06173a98f35c5447a198cb4fe53692ce')])),
+wsi_service-1  |                          '43ce3fc1c16755608967675f07034823': SlideLocalMapper(id='43ce3fc1c16755608967675f07034823', local_id='02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_storage=SlideStorage(slide_id='43ce3fc1c16755608967675f07034823', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_id='43ce3fc1c16755608967675f07034823', main_address=True, storage_address_id='43ce3fc1c16755608967675f07034823')])),
+wsi_service-1  |                          '48c75eeb2bbe53308274e46e6fdbe0a6': SlideLocalMapper(id='48c75eeb2bbe53308274e46e6fdbe0a6', local_id='ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_storage=SlideStorage(slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', main_address=True, storage_address_id='48c75eeb2bbe53308274e46e6fdbe0a6')])),
+wsi_service-1  |                          '7950d468a9c65d4dbed924a59ccae5ad': SlideLocalMapper(id='7950d468a9c65d4dbed924a59ccae5ad', local_id='6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_storage=SlideStorage(slide_id='7950d468a9c65d4dbed924a59ccae5ad', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_id='7950d468a9c65d4dbed924a59ccae5ad', main_address=True, storage_address_id='7950d468a9c65d4dbed924a59ccae5ad')])),
+wsi_service-1  |                          '7b3bf4c34c3d557aae6b46964b4bbca5': SlideLocalMapper(id='7b3bf4c34c3d557aae6b46964b4bbca5', local_id='68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_storage=SlideStorage(slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', main_address=True, storage_address_id='7b3bf4c34c3d557aae6b46964b4bbca5')])),
+wsi_service-1  |                          '84c35efb4bfc57ca8a49e4d9d4969d97': SlideLocalMapper(id='84c35efb4bfc57ca8a49e4d9d4969d97', local_id='3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_storage=SlideStorage(slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', storage_type='fs', storage_addresses=[StorageAddress(address='case_4/3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', main_address=True, storage_address_id='84c35efb4bfc57ca8a49e4d9d4969d97')])),
+wsi_service-1  |                          'bfde8429ca1a531fb9c0fa83004d987d': SlideLocalMapper(id='bfde8429ca1a531fb9c0fa83004d987d', local_id='2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_storage=SlideStorage(slide_id='bfde8429ca1a531fb9c0fa83004d987d', storage_type='fs', storage_addresses=[StorageAddress(address='case_3/2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_id='bfde8429ca1a531fb9c0fa83004d987d', main_address=True, storage_address_id='bfde8429ca1a531fb9c0fa83004d987d')])),
+wsi_service-1  |                          'd93ffdab90ac51e082a76d423294191c': SlideLocalMapper(id='d93ffdab90ac51e082a76d423294191c', local_id='509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_storage=SlideStorage(slide_id='d93ffdab90ac51e082a76d423294191c', storage_type='fs', storage_addresses=[StorageAddress(address='case_2/509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_id='d93ffdab90ac51e082a76d423294191c', main_address=True, storage_address_id='d93ffdab90ac51e082a76d423294191c')]))}}
+wsi_service-1  | ic| local_mode.py:12 in add_routes_local_mode() at 12:01:19.965
+wsi_service-1  | INFO:     Started server process [10]
+wsi_service-1  | INFO:     Waiting for application startup.
+wsi_service-1  | INFO:     Application startup complete.
+wsi_service-1  | ic| 'refreshing mapper'
+wsi_service-1  | ic| settings.enable_viewer_routes: True
+wsi_service-1  |     type(settings.enable_viewer_routes): <class 'bool'>
+wsi_service-1  | ic| 'inside lock'
+wsi_service-1  | ic| force_refresh: False
+wsi_service-1  |     data_dir_changed: False
+wsi_service-1  |     os.path.exists('local_mapper.p'): True
+wsi_service-1  | ic| 'Starting load'
+wsi_service-1  | ic| 'inside lock'
+wsi_service-1  | ic| force_refresh: False
+wsi_service-1  |     data_dir_changed: False
+wsi_service-1  |     os.path.exists('local_mapper.p'): True
+wsi_service-1  | ic| 'Starting load'
+wsi_service-1  | ic| data: {'case_map': {'0044c1c0c7575d668144816a56dced0c': CaseLocalMapper(id='0044c1c0c7575d668144816a56dced0c', local_id='case_5', slides=['48c75eeb2bbe53308274e46e6fdbe0a6', '7950d468a9c65d4dbed924a59ccae5ad', '43ce3fc1c16755608967675f07034823', '7b3bf4c34c3d557aae6b46964b4bbca5']),
+wsi_service-1  |                         '6bfd413e2fa25f0e9170c7711d6adef3': CaseLocalMapper(id='6bfd413e2fa25f0e9170c7711d6adef3', local_id='case_3', slides=['bfde8429ca1a531fb9c0fa83004d987d']),
+wsi_service-1  |                         '732fa09a4f4152e7bc32bd0a902d0654': CaseLocalMapper(id='732fa09a4f4152e7bc32bd0a902d0654', local_id='case_1', slides=['06173a98f35c5447a198cb4fe53692ce']),
+wsi_service-1  |                         '854ed725671059ada4cdc28a4e80d26e': CaseLocalMapper(id='854ed725671059ada4cdc28a4e80d26e', local_id='case_2', slides=['d93ffdab90ac51e082a76d423294191c']),
+wsi_service-1  |                         '893fdd6027485d5b8182c0f56705f108': CaseLocalMapper(id='893fdd6027485d5b8182c0f56705f108', local_id='case_4', slides=['84c35efb4bfc57ca8a49e4d9d4969d97'])},
+wsi_service-1  |            'data_dir': '/data',
+wsi_service-1  |            'slide_map': {'06173a98f35c5447a198cb4fe53692ce': SlideLocalMapper(id='06173a98f35c5447a198cb4fe53692ce', local_id='f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_storage=SlideStorage(slide_id='06173a98f35c5447a198cb4fe53692ce', storage_type='fs', storage_addresses=[StorageAddress(address='case_1/f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_id='06173a98f35c5447a198cb4fe53692ce', main_address=True, storage_address_id='06173a98f35c5447a198cb4fe53692ce')])),
+wsi_service-1  |                          '43ce3fc1c16755608967675f07034823': SlideLocalMapper(id='43ce3fc1c16755608967675f07034823', local_id='02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_storage=SlideStorage(slide_id='43ce3fc1c16755608967675f07034823', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_id='43ce3fc1c16755608967675f07034823', main_address=True, storage_address_id='43ce3fc1c16755608967675f07034823')])),
+wsi_service-1  |                          '48c75eeb2bbe53308274e46e6fdbe0a6': SlideLocalMapper(id='48c75eeb2bbe53308274e46e6fdbe0a6', local_id='ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_storage=SlideStorage(slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', main_address=True, storage_address_id='48c75eeb2bbe53308274e46e6fdbe0a6')])),
+wsi_service-1  |                          '7950d468a9c65d4dbed924a59ccae5ad': SlideLocalMapper(id='7950d468a9c65d4dbed924a59ccae5ad', local_id='6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_storage=SlideStorage(slide_id='7950d468a9c65d4dbed924a59ccae5ad', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_id='7950d468a9c65d4dbed924a59ccae5ad', main_address=True, storage_address_id='7950d468a9c65d4dbed924a59ccae5ad')])),
+wsi_service-1  |                          '7b3bf4c34c3d557aae6b46964b4bbca5': SlideLocalMapper(id='7b3bf4c34c3d557aae6b46964b4bbca5', local_id='68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_storage=SlideStorage(slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', main_address=True, storage_address_id='7b3bf4c34c3d557aae6b46964b4bbca5')])),
+wsi_service-1  |                          '84c35efb4bfc57ca8a49e4d9d4969d97': SlideLocalMapper(id='84c35efb4bfc57ca8a49e4d9d4969d97', local_id='3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_storage=SlideStorage(slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', storage_type='fs', storage_addresses=[StorageAddress(address='case_4/3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', main_address=True, storage_address_id='84c35efb4bfc57ca8a49e4d9d4969d97')])),
+wsi_service-1  |                          'bfde8429ca1a531fb9c0fa83004d987d': SlideLocalMapper(id='bfde8429ca1a531fb9c0fa83004d987d', local_id='2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_storage=SlideStorage(slide_id='bfde8429ca1a531fb9c0fa83004d987d', storage_type='fs', storage_addresses=[StorageAddress(address='case_3/2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_id='bfde8429ca1a531fb9c0fa83004d987d', main_address=True, storage_address_id='bfde8429ca1a531fb9c0fa83004d987d')])),
+wsi_service-1  |                          'd93ffdab90ac51e082a76d423294191c': SlideLocalMapper(id='d93ffdab90ac51e082a76d423294191c', local_id='509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_storage=SlideStorage(slide_id='d93ffdab90ac51e082a76d423294191c', storage_type='fs', storage_addresses=[StorageAddress(address='case_2/509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_id='d93ffdab90ac51e082a76d423294191c', main_address=True, storage_address_id='d93ffdab90ac51e082a76d423294191c')]))}}
+wsi_service-1  | ic| local_mode.py:12 in add_routes_local_mode() at 12:01:20.020
+wsi_service-1  | INFO:     Started server process [14]
+wsi_service-1  | INFO:     Waiting for application startup.
+wsi_service-1  | INFO:     Application startup complete.
+wsi_service-1  | ic| settings.enable_viewer_routes: True
+wsi_service-1  |     type(settings.enable_viewer_routes): <class 'bool'>
+wsi_service-1  | ic| 'inside lock'
+wsi_service-1  | ic| force_refresh: False
+wsi_service-1  |     data_dir_changed: False
+wsi_service-1  |     os.path.exists('local_mapper.p'): True
+wsi_service-1  | ic| 'Starting load'
+wsi_service-1  | ic| data: {'case_map': {'0044c1c0c7575d668144816a56dced0c': CaseLocalMapper(id='0044c1c0c7575d668144816a56dced0c', local_id='case_5', slides=['48c75eeb2bbe53308274e46e6fdbe0a6', '7950d468a9c65d4dbed924a59ccae5ad', '43ce3fc1c16755608967675f07034823', '7b3bf4c34c3d557aae6b46964b4bbca5']),
+wsi_service-1  |                         '6bfd413e2fa25f0e9170c7711d6adef3': CaseLocalMapper(id='6bfd413e2fa25f0e9170c7711d6adef3', local_id='case_3', slides=['bfde8429ca1a531fb9c0fa83004d987d']),
+wsi_service-1  |                         '732fa09a4f4152e7bc32bd0a902d0654': CaseLocalMapper(id='732fa09a4f4152e7bc32bd0a902d0654', local_id='case_1', slides=['06173a98f35c5447a198cb4fe53692ce']),
+wsi_service-1  |                         '854ed725671059ada4cdc28a4e80d26e': CaseLocalMapper(id='854ed725671059ada4cdc28a4e80d26e', local_id='case_2', slides=['d93ffdab90ac51e082a76d423294191c']),
+wsi_service-1  |                         '893fdd6027485d5b8182c0f56705f108': CaseLocalMapper(id='893fdd6027485d5b8182c0f56705f108', local_id='case_4', slides=['84c35efb4bfc57ca8a49e4d9d4969d97'])},
+wsi_service-1  |            'data_dir': '/data',
+wsi_service-1  |            'slide_map': {'06173a98f35c5447a198cb4fe53692ce': SlideLocalMapper(id='06173a98f35c5447a198cb4fe53692ce', local_id='f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_storage=SlideStorage(slide_id='06173a98f35c5447a198cb4fe53692ce', storage_type='fs', storage_addresses=[StorageAddress(address='case_1/f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_id='06173a98f35c5447a198cb4fe53692ce', main_address=True, storage_address_id='06173a98f35c5447a198cb4fe53692ce')])),
+wsi_service-1  |                          '43ce3fc1c16755608967675f07034823': SlideLocalMapper(id='43ce3fc1c16755608967675f07034823', local_id='02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_storage=SlideStorage(slide_id='43ce3fc1c16755608967675f07034823', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_id='43ce3fc1c16755608967675f07034823', main_address=True, storage_address_id='43ce3fc1c16755608967675f07034823')])),
+wsi_service-1  |                          '48c75eeb2bbe53308274e46e6fdbe0a6': SlideLocalMapper(id='48c75eeb2bbe53308274e46e6fdbe0a6', local_id='ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_storage=SlideStorage(slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', main_address=True, storage_address_id='48c75eeb2bbe53308274e46e6fdbe0a6')])),
+wsi_service-1  |                          '7950d468a9c65d4dbed924a59ccae5ad': SlideLocalMapper(id='7950d468a9c65d4dbed924a59ccae5ad', local_id='6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_storage=SlideStorage(slide_id='7950d468a9c65d4dbed924a59ccae5ad', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_id='7950d468a9c65d4dbed924a59ccae5ad', main_address=True, storage_address_id='7950d468a9c65d4dbed924a59ccae5ad')])),
+wsi_service-1  |                          '7b3bf4c34c3d557aae6b46964b4bbca5': SlideLocalMapper(id='7b3bf4c34c3d557aae6b46964b4bbca5', local_id='68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_storage=SlideStorage(slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', main_address=True, storage_address_id='7b3bf4c34c3d557aae6b46964b4bbca5')])),
+wsi_service-1  |                          '84c35efb4bfc57ca8a49e4d9d4969d97': SlideLocalMapper(id='84c35efb4bfc57ca8a49e4d9d4969d97', local_id='3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_storage=SlideStorage(slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', storage_type='fs', storage_addresses=[StorageAddress(address='case_4/3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', main_address=True, storage_address_id='84c35efb4bfc57ca8a49e4d9d4969d97')])),
+wsi_service-1  |                          'bfde8429ca1a531fb9c0fa83004d987d': SlideLocalMapper(id='bfde8429ca1a531fb9c0fa83004d987d', local_id='2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_storage=SlideStorage(slide_id='bfde8429ca1a531fb9c0fa83004d987d', storage_type='fs', storage_addresses=[StorageAddress(address='case_3/2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_id='bfde8429ca1a531fb9c0fa83004d987d', main_address=True, storage_address_id='bfde8429ca1a531fb9c0fa83004d987d')])),
+wsi_service-1  |                          'd93ffdab90ac51e082a76d423294191c': SlideLocalMapper(id='d93ffdab90ac51e082a76d423294191c', local_id='509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_storage=SlideStorage(slide_id='d93ffdab90ac51e082a76d423294191c', storage_type='fs', storage_addresses=[StorageAddress(address='case_2/509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_id='d93ffdab90ac51e082a76d423294191c', main_address=True, storage_address_id='d93ffdab90ac51e082a76d423294191c')]))}}
+wsi_service-1  | ic| local_mode.py:12 in add_routes_local_mode() at 12:01:20.062
+wsi_service-1  | ic| settings.enable_viewer_routes: True
+wsi_service-1  |     type(settings.enable_viewer_routes): <class 'bool'>
+wsi_service-1  | INFO:     Started server process [9]
+wsi_service-1  | INFO:     Waiting for application startup.
+wsi_service-1  | INFO:     Application startup complete.
+wsi_service-1  | ic| data: {'case_map': {'0044c1c0c7575d668144816a56dced0c': CaseLocalMapper(id='0044c1c0c7575d668144816a56dced0c', local_id='case_5', slides=['48c75eeb2bbe53308274e46e6fdbe0a6', '7950d468a9c65d4dbed924a59ccae5ad', '43ce3fc1c16755608967675f07034823', '7b3bf4c34c3d557aae6b46964b4bbca5']),
+wsi_service-1  |                         '6bfd413e2fa25f0e9170c7711d6adef3': CaseLocalMapper(id='6bfd413e2fa25f0e9170c7711d6adef3', local_id='case_3', slides=['bfde8429ca1a531fb9c0fa83004d987d']),
+wsi_service-1  |                         '732fa09a4f4152e7bc32bd0a902d0654': CaseLocalMapper(id='732fa09a4f4152e7bc32bd0a902d0654', local_id='case_1', slides=['06173a98f35c5447a198cb4fe53692ce']),
+wsi_service-1  |                         '854ed725671059ada4cdc28a4e80d26e': CaseLocalMapper(id='854ed725671059ada4cdc28a4e80d26e', local_id='case_2', slides=['d93ffdab90ac51e082a76d423294191c']),
+wsi_service-1  |                         '893fdd6027485d5b8182c0f56705f108': CaseLocalMapper(id='893fdd6027485d5b8182c0f56705f108', local_id='case_4', slides=['84c35efb4bfc57ca8a49e4d9d4969d97'])},
+wsi_service-1  |            'data_dir': '/data',
+wsi_service-1  |            'slide_map': {'06173a98f35c5447a198cb4fe53692ce': SlideLocalMapper(id='06173a98f35c5447a198cb4fe53692ce', local_id='f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_storage=SlideStorage(slide_id='06173a98f35c5447a198cb4fe53692ce', storage_type='fs', storage_addresses=[StorageAddress(address='case_1/f12cee5e-50f2-417a-9a00-7ac00e7f61eb.ndpi', slide_id='06173a98f35c5447a198cb4fe53692ce', main_address=True, storage_address_id='06173a98f35c5447a198cb4fe53692ce')])),
+wsi_service-1  |                          '43ce3fc1c16755608967675f07034823': SlideLocalMapper(id='43ce3fc1c16755608967675f07034823', local_id='02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_storage=SlideStorage(slide_id='43ce3fc1c16755608967675f07034823', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/02b36ffd-6cb2-4230-9493-9d0ffd1f44a5.ndpi', slide_id='43ce3fc1c16755608967675f07034823', main_address=True, storage_address_id='43ce3fc1c16755608967675f07034823')])),
+wsi_service-1  |                          '48c75eeb2bbe53308274e46e6fdbe0a6': SlideLocalMapper(id='48c75eeb2bbe53308274e46e6fdbe0a6', local_id='ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_storage=SlideStorage(slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/ca009f02-16ac-412b-86d5-b427df4dd64c.ndpi', slide_id='48c75eeb2bbe53308274e46e6fdbe0a6', main_address=True, storage_address_id='48c75eeb2bbe53308274e46e6fdbe0a6')])),
+wsi_service-1  |                          '7950d468a9c65d4dbed924a59ccae5ad': SlideLocalMapper(id='7950d468a9c65d4dbed924a59ccae5ad', local_id='6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_storage=SlideStorage(slide_id='7950d468a9c65d4dbed924a59ccae5ad', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/6e3ec2f7-e503-43c2-b774-012594d55323.ndpi', slide_id='7950d468a9c65d4dbed924a59ccae5ad', main_address=True, storage_address_id='7950d468a9c65d4dbed924a59ccae5ad')])),
+wsi_service-1  |                          '7b3bf4c34c3d557aae6b46964b4bbca5': SlideLocalMapper(id='7b3bf4c34c3d557aae6b46964b4bbca5', local_id='68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_storage=SlideStorage(slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', storage_type='fs', storage_addresses=[StorageAddress(address='case_5/68828cd3-e384-472f-99d0-ffe28f36fefe.ndpi', slide_id='7b3bf4c34c3d557aae6b46964b4bbca5', main_address=True, storage_address_id='7b3bf4c34c3d557aae6b46964b4bbca5')])),
+wsi_service-1  |                          '84c35efb4bfc57ca8a49e4d9d4969d97': SlideLocalMapper(id='84c35efb4bfc57ca8a49e4d9d4969d97', local_id='3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_storage=SlideStorage(slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', storage_type='fs', storage_addresses=[StorageAddress(address='case_4/3bf65ab2-881c-4eed-a4a3-b8a6ceff903d.ndpi', slide_id='84c35efb4bfc57ca8a49e4d9d4969d97', main_address=True, storage_address_id='84c35efb4bfc57ca8a49e4d9d4969d97')])),
+wsi_service-1  |                          'bfde8429ca1a531fb9c0fa83004d987d': SlideLocalMapper(id='bfde8429ca1a531fb9c0fa83004d987d', local_id='2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_storage=SlideStorage(slide_id='bfde8429ca1a531fb9c0fa83004d987d', storage_type='fs', storage_addresses=[StorageAddress(address='case_3/2429b94a-cd0d-4cb5-90bc-eab123fce5cb.ndpi', slide_id='bfde8429ca1a531fb9c0fa83004d987d', main_address=True, storage_address_id='bfde8429ca1a531fb9c0fa83004d987d')])),
+wsi_service-1  |                          'd93ffdab90ac51e082a76d423294191c': SlideLocalMapper(id='d93ffdab90ac51e082a76d423294191c', local_id='509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_storage=SlideStorage(slide_id='d93ffdab90ac51e082a76d423294191c', storage_type='fs', storage_addresses=[StorageAddress(address='case_2/509b2bf4-353c-4088-aefc-64d1009afbfe.ndpi', slide_id='d93ffdab90ac51e082a76d423294191c', main_address=True, storage_address_id='d93ffdab90ac51e082a76d423294191c')]))}}
+wsi_service-1  | ic| local_mode.py:12 in add_routes_local_mode() at 12:01:20.114
+wsi_service-1  | INFO:     Started server process [15]
+wsi_service-1  | INFO:     Waiting for application startup.
+wsi_service-1  | INFO:     Application startup complete.
+wsi_service-1  | ic| settings.enable_viewer_routes: True
+wsi_service-1  |     type(settings.enable_viewer_routes): <class 'bool'>
+wsi_service-1  | INFO:     Started server process [8]
+wsi_service-1  | INFO:     Waiting for application startup.
+wsi_service-1  | INFO:     Application startup complete.
+Gracefully stopping... (press Ctrl+C again to force)
+ Container wsi-service-wsi_service-1  Stopping
+ Container wsi-service-wsi_service-1  Stopped
+canceled

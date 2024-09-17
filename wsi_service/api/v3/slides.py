@@ -59,7 +59,16 @@ def add_routes_slides(app, settings, slide_manager):
         await api_integration.allow_access_slide(auth_payload=payload, slide_id=slide_id, manager=slide_manager,
                                                  plugin=plugin, slide=slide)
         return slide
-
+        
+    @app.get("/slides/filepath", response_model=List[str], tags=["Main Routes"])
+    async def _(slide_id: str = SlideQuery, payload=api_integration.global_depends()):
+        """
+        Get the path to the file on the server for a slide, given its ID
+        """
+        path = await slide_manager.get_slide_file_paths(slide_id)
+        
+        return path
+        
     @app.get(
         "/slides/thumbnail/max_size/{max_x}/{max_y}",
         responses=ImageResponses,
@@ -557,3 +566,5 @@ def add_routes_slides(app, settings, slide_manager):
 
         regions = await asyncio.gather(*requests)
         return batch_safe_make_response(slides, regions, image_format, image_quality, image_channels)
+
+    

@@ -8,6 +8,12 @@ from wsi_service.api.v3 import add_routes_v3
 from wsi_service.singletons import settings
 from wsi_service.slide_manager import SlideManager
 
+# addded for debugging MKS
+#To make ic() available in every file without needing to be imported in every file, you can install()
+from icecream import install
+install()
+
+
 openapi_url = "/openapi.json"
 if settings.disable_openapi:
     openapi_url = ""

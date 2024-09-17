@@ -20,26 +20,36 @@ class SimpleMapper:
         self.refresh(force_refresh=False)
 
     def refresh(self, force_refresh=True):
+        ic("refreshing mapper")
         with FileLock("local_mapper.lock"):
+            ic("inside lock")
             data_dir_changed = self._get_data_dir_changed()
+            ic(force_refresh,data_dir_changed,os.path.exists('local_mapper.p'))
             if force_refresh or data_dir_changed or not os.path.exists("local_mapper.p"):
+                ic("Starting directory Scan")
                 self._initialize_with_path(self.data_dir)
                 data = {}
                 data["data_dir"] = self.data_dir
                 data["case_map"] = self.case_map
                 data["slide_map"] = self.slide_map
+                ic(data)
                 with open("local_mapper.p", "wb") as f:
                     pickle.dump(data, f)
+        
         self.load()
 
     def load(self):
+        ic("load called")
         updated_hash = self._get_updated_hash()
+        
         if self.hash != updated_hash:
+            ic("Starting load")
             with FileLock("local_mapper.lock"):
                 with open("local_mapper.p", "rb") as f:
                     data = pickle.load(f)
                     self.case_map = data["case_map"]
                     self.slide_map = data["slide_map"]
+                    #ic(data)
                 self.hash = self._get_updated_hash()
 
     def _get_updated_hash(self):
@@ -112,7 +122,7 @@ class SimpleMapper:
 
     def get_slide(self, slide_id):
         if slide_id not in self.slide_map:
-            self.load()
+            self.refresh()
             if slide_id not in self.slide_map:
                 raise HTTPException(status_code=404, detail=f"Slide with slide_id {slide_id} does not exist")
         return self.slide_map[slide_id]
