@@ -48,7 +48,7 @@ RUN poetry install
 FROM ubuntu:22.04@sha256:bcc511d82482900604524a8e8d64bf4c53b2461868dac55f4d04d660e61983cb AS wsi_service_intermediate
 
 RUN apt-get update \
-  && apt-get install --no-install-recommends -y build-essential python3-pip python3-packaging python3-dev \
+  && apt-get install --no-install-recommends -y build-essential python3-pip curl python3-packaging python3-dev \
   && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /artifacts
@@ -81,7 +81,7 @@ RUN mkdir /data
 FROM ubuntu:22.04@sha256:bcc511d82482900604524a8e8d64bf4c53b2461868dac55f4d04d660e61983cb AS wsi_service_production
 
 RUN apt-get update \
-  && apt-get install --no-install-recommends -y python3 python3-pip python3-packaging \
+  && apt-get install --no-install-recommends -y python3 python3-pip curl python3-packaging \
   && rm -rf /var/lib/apt/lists/*
 
 RUN adduser --disabled-password --gecos '' appuser \

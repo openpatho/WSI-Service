@@ -60,3 +60,8 @@ if settings.cors_allow_origins:
 add_routes_v3(app_v3, settings, slide_manager)
 
 app.mount("/v3", app_v3)
+
+@app.get("/health")
+async def health_check():
+    # Implement actual health logic here, if we ever need any
+    return {"status": "healthy"}
