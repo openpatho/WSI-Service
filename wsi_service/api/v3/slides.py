@@ -1,7 +1,7 @@
-from typing import List
+from typing import List, Optional
 import asyncio
 
-from fastapi import Path
+from fastapi import Path, Depends, Header
 from fastapi.responses import StreamingResponse
 from PIL import Image
 from zipfly import ZipFly
@@ -48,10 +48,12 @@ from wsi_service.utils.image_utils import (
 )
 from .singletons import api_integration
 
+async def get_authorization_header(authorization: Optional[str] = Header(None)):
+    return authorization
 
 def add_routes_slides(app, settings, slide_manager):
     @app.get("/slides/info", response_model=SlideInfo, tags=["Main Routes"])
-    async def _(slide_id: str = SlideQuery, plugin: str = PluginQuery, payload=api_integration.global_depends()):
+    async def _(slide_id: str = SlideQuery, plugin: str = PluginQuery, payload: Optional[str] = Depends(get_authorization_header)):
         """
         Get metadata information for a slide given its ID
         """
@@ -61,7 +63,7 @@ def add_routes_slides(app, settings, slide_manager):
         return slide
         
     @app.get("/slides/filepath", response_model=List[str], tags=["Main Routes"])
-    async def _(slide_id: str = SlideQuery, payload=api_integration.global_depends()):
+    async def _(slide_id: str = SlideQuery, payload: Optional[str] = Depends(get_authorization_header)):
         """
         Get the path to the file on the server for a slide, given its ID
         """
@@ -86,7 +88,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         """
         Get slide thumbnail image  given its ID.
@@ -117,7 +119,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         """
         Get the label image of a slide given its ID.
@@ -149,7 +151,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         """
         Get the macro image of a slide given its ID.
@@ -187,7 +189,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         """
         Get a region of a slide given its ID and by providing the following parameters:
@@ -264,7 +266,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         """
         Get a tile of a slide given its ID and by providing the following parameters:
@@ -322,7 +324,7 @@ def add_routes_slides(app, settings, slide_manager):
         return make_response(slide, image_tile, image_format, image_quality, image_channels)
 
     @app.get("/slides/download", tags=["Main Routes"])
-    async def _(slide_id: str = SlideQuery, plugin: str = PluginQuery, payload=api_integration.global_depends()):
+    async def _(slide_id: str = SlideQuery, plugin: str = PluginQuery, payload: Optional[str] = Depends(get_authorization_header)):
         """
         Download raw slide data as zip
         """
@@ -347,7 +349,7 @@ def add_routes_slides(app, settings, slide_manager):
     # NEW API ALLOWING BATCH ACCESS
     ##
     @app.get("/batch/info", response_model=List[SlideInfo], tags=["Main Routes"])
-    async def _(slide_ids: str = SlideListQuery, plugin: str = PluginQuery, payload=api_integration.global_depends()):
+    async def _(slide_ids: str = SlideListQuery, plugin: str = PluginQuery, payload: Optional[str] = Depends(get_authorization_header)):
         """
         Get metadata information for a slide set (see description above sister function)
         """
@@ -375,7 +377,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         """
         Get slide SET thumbnails image  given its ID. (see description above sister function)
@@ -408,7 +410,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         """
         Get the label image of a slide set given path(s). (see description above sister function)
@@ -447,7 +449,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         """
         Get the macro image of a slide set given path(s). (see description above sister function)
@@ -493,7 +495,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         """
         Get a tile of a slide given its path (see description above sister function)
@@ -537,7 +539,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         """
         Get a tile of a slide given its path (see description above sister function)
