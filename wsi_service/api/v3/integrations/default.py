@@ -1,9 +1,9 @@
-import os, time, pickle
-from fastapi import Header, Depends
-
-
 class Default:
-        
+    def __init__(self, settings, logger, http_client):
+        self.settings = settings
+        self.logger = logger
+        self.http_client = http_client
+
     def global_depends(self):
         ...
 
