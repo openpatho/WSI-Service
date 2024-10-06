@@ -14,10 +14,15 @@ from wsi_service.slide_manager import SlideManager
 from icecream import install
 install()
 ic.disable()
-from filelock import FileLock
 
-log_file = "api_calls.pkl"
-lock_file = f"{log_file}.lock"
+
+try:
+    from wsi_service.utils.cloudwrappers.redis-openpatho import RedisLogger
+except:
+    utils.cloudwrappers.redis-openpatho import RedisLogger
+
+
+redislogger = RedisLogger() 
 
 openapi_url = "/openapi.json"
 if settings.disable_openapi:
@@ -68,28 +73,10 @@ app.mount("/v3", app_v3)
 
 
 def log_api_call(log_entry):
-    with FileLock(lock_file):
-        # Load existing log entries
-        if os.path.exists(log_file):
-            with open(log_file, "rb") as f:
-                api_calls = pickle.load(f)
-        else:
-            api_calls = []
+    redislogger.add_health_log(log_entry)
 
-        # Append the new entry
-        api_calls.insert(0, log_entry)  # Add the new call to the front of the list
-        api_calls = api_calls[:10]  # Keep only the last 10 entries
-
-        # Save the updated log entries
-        with open(log_file, "wb") as f:
-            pickle.dump(api_calls, f)
-
-def get_last_api_calls():
-    with FileLock(lock_file):
-        if os.path.exists(log_file):
-            with open(log_file, "rb") as f:
-                return pickle.load(f)
-        return []
+def get_last_api_calls(service_name):
+    redislogger.read_filtered_health_log(service_name, limit=5)
         
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
@@ -107,11 +94,11 @@ async def log_requests(request: Request, call_next):
 
     # Create the log entry
     log_entry = {
+        "service name":"Tile Server",
         "method": method,
         "path": path,
         "query_params": query_params,
-        "body": body,
-        "timestamp": timestamp
+        "body": body
     }
 
     # Log the API call to the pickle file
@@ -124,5 +111,5 @@ async def log_requests(request: Request, call_next):
 @app.get("/health")
 async def health_check():
     # Retrieve the last 10 API calls from pickle
-    last_calls = get_last_api_calls()
+    last_calls = get_last_api_calls("Tile Server")
     return {"status": "healthy", "last_calls": last_calls}

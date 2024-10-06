@@ -96,8 +96,12 @@ COPY --chown=appuser --from=wsi_service_intermediate /data /data
 
 ENV WEB_CONCURRENCY=8
 
+
+
 EXPOSE 8080/tcp
 
 WORKDIR /usr/local/lib/python3.10/dist-packages/wsi_service
+
+COPY public_environment_settings .env
 
 CMD ["python3", "-m", "uvicorn", "wsi_service.app:app", "--host", "0.0.0.0", "--port", "8080", "--loop=uvloop", "--http=httptools"]

@@ -9,6 +9,7 @@ class DebugAuth(Default):
         self.settings = settings
         self.logger = logger
         self.http_client = http_client
+        print("Finished initialising the debugging 'pickleAuth' addin")
         
     @staticmethod
     def global_depends(self):

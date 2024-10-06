@@ -1,3 +1,6 @@
 [submodule "wsi_service/models"]
 	path = wsi_service/models
 	url = https://gitlab.com/empaia/services/models.git
+[submodule "wsi_service/utils/cloudwrappers"]
+	path = wsi_service/utils/cloudwrappers
+	url = https://github.com/invivasolutions/cloudwrappers.git
