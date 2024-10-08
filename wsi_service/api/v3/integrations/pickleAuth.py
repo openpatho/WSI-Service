@@ -21,18 +21,13 @@ class DebugAuth(Default):
             return authorization
         return Depends(dependency)
 
-    async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None):
+    async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None, calling_function=None):
         # Gather data into a dictionary
         try:
-            stack = inspect.stack()
-            caller = stack[1]  # Caller is the function that called this one (stack[1])
-            calling_function = caller.function
-            calling_filename = caller.filename
-            calling_lineno = caller.lineno
-            callString = f"Called by function: {calling_function} in file: {calling_filename} at line: {calling_lineno}"
+            
             data = {
                 "auth_payload": repr(auth_payload),
-                "requested_page": callString,
+                "requested_page": calling_function,
                 "slide_id": slide_id,
                 "plugin": repr(plugin),
                 "slide": repr(slide)

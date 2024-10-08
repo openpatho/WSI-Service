@@ -58,7 +58,7 @@ def add_routes_slides(app, settings, slide_manager):
         Get metadata information for a slide given its ID
         """
         slide = await slide_manager.get_slide_info(slide_id, slide_info_model=SlideInfo, plugin=plugin)
-        await api_integration.allow_access_slide(auth_payload=payload, slide_id=slide_id, manager=slide_manager,
+        await api_integration.allow_access_slide(calling_function="/slides/info",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
                                                  plugin=plugin, slide=slide)
         return slide
         
@@ -100,7 +100,7 @@ def add_routes_slides(app, settings, slide_manager):
         When tiff is specified as output format the raw data of the image is returned.
         """
         validate_image_request(image_format, image_quality)
-        await api_integration.allow_access_slide(auth_payload=payload, slide_id=slide_id, manager=slide_manager,
+        await api_integration.allow_access_slide(calling_function=f"/slides/thumbnail/max_size/{max_x}/{max_y}",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
                                                  plugin=plugin)
         slide = await slide_manager.get_slide(slide_id, plugin=plugin)
         thumbnail = await slide.get_thumbnail(max_x, max_y)
@@ -131,7 +131,7 @@ def add_routes_slides(app, settings, slide_manager):
         When tiff is specified as output format the raw data of the image is returned.
         """
         validate_image_request(image_format, image_quality)
-        await api_integration.allow_access_slide(auth_payload=payload, slide_id=slide_id, manager=slide_manager,
+        await api_integration.allow_access_slide(calling_function= f"/slides/label/max_size/{max_x}/{max_y}",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
                                                  plugin=plugin)
         slide = await slide_manager.get_slide(slide_id, plugin=plugin)
         label = await slide.get_label()
@@ -163,7 +163,7 @@ def add_routes_slides(app, settings, slide_manager):
         When tiff is specified as output format the raw data of the image is returned.
         """
         validate_image_request(image_format, image_quality)
-        await api_integration.allow_access_slide(auth_payload=payload, slide_id=slide_id, manager=slide_manager,
+        await api_integration.allow_access_slide(calling_function=f"/slides/macro/max_size/{max_x}/{max_y}",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
                                                  plugin=plugin)
         slide = await slide_manager.get_slide(slide_id, plugin=plugin)
         macro = await slide.get_macro()
@@ -234,7 +234,7 @@ def add_routes_slides(app, settings, slide_manager):
         vp_color = validate_hex_color_string(padding_color)
         validate_image_request(image_format, image_quality)
         validate_image_size(size_x, size_y)
-        await api_integration.allow_access_slide(auth_payload=payload, slide_id=slide_id, manager=slide_manager,
+        await api_integration.allow_access_slide(calling_function=f"/slides/region/level/{level}/start/{start_x}/{start_y}/size/{size_x}/{size_y}",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
                                                  plugin=plugin)
         slide = await slide_manager.get_slide(slide_id, plugin=plugin)
         slide_info = await slide.get_info()
@@ -308,7 +308,7 @@ def add_routes_slides(app, settings, slide_manager):
         """
         vp_color = validate_hex_color_string(padding_color)
         validate_image_request(image_format, image_quality)
-        await api_integration.allow_access_slide(auth_payload=payload, slide_id=slide_id, manager=slide_manager,
+        await api_integration.allow_access_slide(calling_function=f"/slides/tile/level/{level}/tile/{tile_x}/{tile_y}",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
                                                  plugin=plugin)
         slide = await slide_manager.get_slide(slide_id, plugin=plugin)
         slide_info = await slide.get_info()
@@ -328,7 +328,7 @@ def add_routes_slides(app, settings, slide_manager):
         """
         Download raw slide data as zip
         """
-        await api_integration.allow_access_slide(auth_payload=payload, slide_id=slide_id, manager=slide_manager,
+        await api_integration.allow_access_slide(calling_function="/slides/download",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
                                                  plugin=plugin)
         paths = await slide_manager.get_slide_file_paths(slide_id)
         # Paths contain file paths that are stored in the storage mapper.
@@ -357,7 +357,7 @@ def add_routes_slides(app, settings, slide_manager):
         requests = map(lambda sid: slide_manager.get_slide_info(sid, slide_info_model=SlideInfo, plugin=plugin),
                        slide_ids)
         slide_list = await asyncio.gather(*requests)
-        requests = [api_integration.allow_access_slide(auth_payload=payload, slide_id=slide.id, manager=slide_manager,
+        requests = [api_integration.allow_access_slide(calling_function="/batch/info",auth_payload=payload, slide_id=slide.id, manager=slide_manager,
                                                        plugin=plugin, slide=slide) for slide in slide_list]
         await asyncio.gather(*requests)
         return slide_list
@@ -384,7 +384,7 @@ def add_routes_slides(app, settings, slide_manager):
         """
         slide_ids = slide_ids.split(",")
         requests = [
-            api_integration.allow_access_slide(auth_payload=payload, slide_id=sid, manager=slide_manager, plugin=plugin)
+            api_integration.allow_access_slide(calling_function=f"/batch/thumbnail/max_size/{max_x}/{max_y}",auth_payload=payload, slide_id=sid, manager=slide_manager, plugin=plugin)
             for sid in slide_ids
         ]
         await asyncio.gather(*requests)
@@ -417,7 +417,7 @@ def add_routes_slides(app, settings, slide_manager):
         """
         slide_ids = slide_ids.split(",")
         requests = [
-            api_integration.allow_access_slide(auth_payload=payload, slide_id=sid, manager=slide_manager, plugin=plugin)
+            api_integration.allow_access_slide(calling_function=f"/batch/label/max_size/{max_x}/{max_y}",auth_payload=payload, slide_id=sid, manager=slide_manager, plugin=plugin)
             for sid in slide_ids
         ]
         await asyncio.gather(*requests)
@@ -456,7 +456,7 @@ def add_routes_slides(app, settings, slide_manager):
         """
         slide_ids = slide_ids.split(",")
         requests = [
-            api_integration.allow_access_slide(auth_payload=payload, slide_id=sid, manager=slide_manager, plugin=plugin)
+            api_integration.allow_access_slide(calling_function=f"/batch/macro/max_size/{max_x}/{max_y}",auth_payload=payload, slide_id=sid, manager=slide_manager, plugin=plugin)
             for sid in slide_ids]
         await asyncio.gather(*requests)
 
@@ -502,7 +502,7 @@ def add_routes_slides(app, settings, slide_manager):
         """
         slide_ids = slide_ids.split(",")
         requests = [
-            api_integration.allow_access_slide(auth_payload=payload, slide_id=sid, manager=slide_manager, plugin=plugin)
+            api_integration.allow_access_slide(calling_function=f"/batch/tile/level/{level}/tile/{tile_x}/{tile_y}",auth_payload=payload, slide_id=sid, manager=slide_manager, plugin=plugin)
             for sid in slide_ids]
         await asyncio.gather(*requests)
 
@@ -546,7 +546,7 @@ def add_routes_slides(app, settings, slide_manager):
         """
         slide_ids = slide_ids.split(",")
         requests = [
-            api_integration.allow_access_slide(auth_payload=payload, slide_id=sid, manager=slide_manager, plugin=plugin)
+            api_integration.allow_access_slide(calling_function="/batch/arbitrary/",auth_payload=payload, slide_id=sid, manager=slide_manager, plugin=plugin)
             for sid in slide_ids]
         await asyncio.gather(*requests)
 
