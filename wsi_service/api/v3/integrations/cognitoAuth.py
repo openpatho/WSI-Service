@@ -16,7 +16,7 @@ class cognitoAuth(Default):
 
         self.cognito_client = boto3.client('cognito-idp', region_name=self.aws_region)
 
-    async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide):
+    async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None , calling_function=None):
         # Extract the token from the payload
         token = auth_payload.get("token")
         if not token:
