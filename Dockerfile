@@ -53,7 +53,11 @@ RUN apt-get update \
 
 RUN mkdir /artifacts
 COPY --from=wsi_service_build /wsi-service/requirements.txt /artifacts
-RUN pip install -r /artifacts/requirements.txt
+
+COPY wsi_service/utils/cloudwrappers/requirements.txt /artifacts/cw_requirements.txt
+
+RUN pip install -r /artifacts/requirements.txt 
+RUN pip install -r /artifacts/cw_requirements.txt
 
 COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/openslide/requirements.txt /artifacts/requirements_openslide.txt
 RUN pip install -r /artifacts/requirements_openslide.txt
@@ -75,6 +79,7 @@ COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/wsidicom/dis
 
 RUN pip3 install /wsi-service/dist/*.whl
 
+
 RUN mkdir /data
 
 
@@ -94,6 +99,7 @@ COPY --chown=appuser --from=wsi_service_build /openslide_deps/* /usr/lib/x86_64-
 COPY --chown=appuser --from=wsi_service_intermediate /usr/local/lib/python3.10/dist-packages/ /usr/local/lib/python3.10/dist-packages/
 COPY --chown=appuser --from=wsi_service_intermediate /data /data
 
+
 ENV WEB_CONCURRENCY=8
 
 
@@ -103,5 +109,6 @@ EXPOSE 8080/tcp
 WORKDIR /usr/local/lib/python3.10/dist-packages/wsi_service
 
 COPY public_environment_settings .env
+
 
 CMD ["python3", "-m", "uvicorn", "wsi_service.app:app", "--host", "0.0.0.0", "--port", "8080", "--loop=uvloop", "--http=httptools"]

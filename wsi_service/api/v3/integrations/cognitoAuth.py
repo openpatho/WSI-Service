@@ -43,13 +43,16 @@ class cognitoAuth(Default):
 
         # Fetch the public keys from Cognito's JWK endpoint
         jwks_url = f"https://cognito-idp.{self.aws_region}.amazonaws.com/{self.cognito_user_pool_id}/.well-known/jwks.json"
-        response = self.cognito_client._make_api_call("get", jwks_url)
+        response = requests.get(jwks_url)
         keys = response.json()["keys"]
-
+    
         # Find the key that matches the kid in the JWT header
         key = next(k for k in keys if k["kid"] == kid)
+    
+        # Use the key to validate the token (you can use PyJWT or any other library here)
+        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
 
         # Verify and decode the token
-        decoded_token = jwt.decode(token, key=key, algorithms=["RS256"], audience=self.client_id)
+        decoded_token = jwt.decode(token, key=key, algorithms=["RS256"])
 
         return decoded_token

@@ -17,9 +17,9 @@ ic.disable()
 
 
 try:
-    from wsi_service.utils.cloudwrappers.redis-openpatho import RedisLogger
+    from wsi_service.utils.cloudwrappers.redis_openpatho import RedisLogger
 except:
-    utils.cloudwrappers.redis-openpatho import RedisLogger
+    from utils.cloudwrappers.redis_openpatho import RedisLogger
 
 
 redislogger = RedisLogger() 
@@ -110,6 +110,10 @@ async def log_requests(request: Request, call_next):
 
 @app.get("/health")
 async def health_check():
-    # Retrieve the last 10 API calls from pickle
-    last_calls = get_last_api_calls("Tile Server")
-    return {"status": "healthy", "last_calls": last_calls}
+    # Retrieve the last 10 API calls from Redis
+    try:
+        last_calls = get_last_api_calls("ingestion api")
+        return {"status": "healthy", "last_calls": last_calls}
+    except:
+        print("error in health log retrieval")
+        return {"status": "healthy"}
