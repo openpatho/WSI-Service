@@ -1,6 +1,10 @@
 import os
 import time
 import jwt  # Alternatively, you can use from jose import jwt
+import requests
+from fastapi import Header, Depends
+from fastapi import HTTPException, status
+
 from wsi_service.api.v3.integrations.default import Default
 from botocore.exceptions import BotoCoreError, ClientError
 from jwt import DecodeError, ExpiredSignatureError
@@ -14,21 +18,40 @@ class cognitoAuth(Default):
         self.aws_region = settings.aws_region  # Add this to settings
         self.jwks_url = settings.jwks_url
 
-
+    @staticmethod
+    def global_depends(self):
+        # This function returns another function that FastAPI can use as a dependency
+        async def dependency(authorization: str = Header(None)):
+            # You can process the 'authorization' header here if needed
+            return authorization
+        return Depends(dependency)
+        
     async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None , calling_function=None):
         # Extract the token from the payload
-        token = None
-        tokens = auth_payload.strip("'").split(" ") # split takes into account any "bearer= " style mess
-        for testtoken in tokens:
-            if len(testtoken) > 20: # ignores anything too short in the token string
-                token = testtoken
-        if not token:
+        
+        try:
+            token = None
+        
+            tokens = auth_payload.strip("'").split(" ") # split takes into account any "bearer= " style mess
+        except:
+           
             raise HTTPException(
                                 status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="No token provided",
                                 headers={"WWW-Authenticate": "Bearer"},
                             )
-
+        
+        for testtoken in tokens:
+            if len(testtoken) > 20: # ignores anything too short in the token string
+                token = testtoken
+        if not token:
+            
+            raise HTTPException(
+                                status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="No token provided",
+                                headers={"WWW-Authenticate": "Bearer"},
+                            )
+       
         try:
             # Validate the token against AWS Cognito
             decoded_token = self.validate_cognito_token(token)
@@ -40,15 +63,18 @@ class cognitoAuth(Default):
                             )
 
             # Optionally, check custom claims or other parts of the token
+            
             return True
 
         except (DecodeError, ExpiredSignatureError) as e:
+            
             raise HTTPException(
                                 status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="Invalid token provided",
                                 headers={"WWW-Authenticate": "Bearer"},
                             )
         except (BotoCoreError, ClientError) as e:
+            
             raise HTTPException(
                                 status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="Invalid token provided",
