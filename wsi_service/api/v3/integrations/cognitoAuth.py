@@ -12,11 +12,13 @@ class cognitoAuth(Default):
         self.client_id = settings.client_id
         self.cognito_user_pool_id = settings.cognito_user_pool_id  # Add this to settings
         self.aws_region = settings.aws_region  # Add this to settings
+        self.jwks_url = settings.jwks_url
 
 
     async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None , calling_function=None):
         # Extract the token from the payload
-        tokens = auth_payload_str.strip("'").split(" ") # split takes into account any "bearer= " style mess
+        token = None
+        tokens = auth_payload.strip("'").split(" ") # split takes into account any "bearer= " style mess
         for testtoken in tokens:
             if len(testtoken) > 20: # ignores anything too short in the token string
                 token = testtoken
@@ -58,7 +60,7 @@ class cognitoAuth(Default):
         kid = headers["kid"]
     
        
-        response = requests.get(jwks_url)
+        response = requests.get(self.jwks_url)
         keys = response.json()["keys"]
     
         # Find the key that matches the kid in the JWT header

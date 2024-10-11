@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     aws_region: str = ""
     idp_url: str = ""
     client_id: str = ""
+    jwks_url: str = ""
     
     # default color for padding of image regions out of image extent
     padding_color: tuple = (255, 255, 255)
