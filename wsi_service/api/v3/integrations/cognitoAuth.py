@@ -18,7 +18,10 @@ class cognitoAuth(Default):
 
     async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None , calling_function=None):
         # Extract the token from the payload
-        token = auth_payload.get("token")
+        tokens = auth_payload_str.strip("'").split(" ") # split takes into account any "bearer= " style mess
+        for testtoken in tokens:
+            if len(testtoken) > 20: # ignores anything too short in the token string
+                token = testtoken
         if not token:
             raise PermissionError("No token provided")
 
@@ -36,13 +39,11 @@ class cognitoAuth(Default):
         except (BotoCoreError, ClientError) as e:
             raise PermissionError(f"Error validating token with Cognito: {str(e)}")
 
-    def validate_cognito_token(self, token):
-        # Decode the JWT token without verification to extract the header and kid
+    def validate_cognito_token(token):
         headers = jwt.get_unverified_header(token)
         kid = headers["kid"]
-
-        # Fetch the public keys from Cognito's JWK endpoint
-        jwks_url = f"https://cognito-idp.{self.aws_region}.amazonaws.com/{self.cognito_user_pool_id}/.well-known/jwks.json"
+    
+       
         response = requests.get(jwks_url)
         keys = response.json()["keys"]
     
@@ -51,8 +52,6 @@ class cognitoAuth(Default):
     
         # Use the key to validate the token (you can use PyJWT or any other library here)
         public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
-
-        # Verify and decode the token
-        decoded_token = jwt.decode(token, key=key, algorithms=["RS256"])
-
+        decoded_token = jwt.decode(token, public_key, algorithms=["RS256"],options={"verify_exp": False})
+    
         return decoded_token
