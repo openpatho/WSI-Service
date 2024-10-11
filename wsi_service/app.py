@@ -46,7 +46,7 @@ app = FastAPI(
     title=settings.title,
     description=settings.description,
     version=settings.version,
-    docs_url="/docs",
+    docs_url=None,
     redoc_url=None,
     openapi_url="/openapi.json" if not settings.disable_openapi else "",
     root_path=settings.root_path,
@@ -55,7 +55,9 @@ app = FastAPI(
 
 add_routes_root(app, settings)
 
-app_v3 = FastAPI(openapi_url=openapi_url)
+app_v3 = FastAPI(openapi_url=openapi_url,
+    docs_url=None,
+    redoc_url=None,)
 
 if settings.cors_allow_origins:
     for app_obj in [app, app_v3]:

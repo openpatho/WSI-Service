@@ -9,6 +9,18 @@ from wsi_service.api.v3.integrations.default import Default
 from botocore.exceptions import BotoCoreError, ClientError
 from jwt import DecodeError, ExpiredSignatureError
 
+from aiocache import caches
+
+# Configure cache in memory
+caches.set_config({
+    'default': {
+        'cache': "aiocache.SimpleMemoryCache",  # You can swap this with RedisCache for more advanced usage
+        'ttl': 3000,  # Cache TTL in seconds
+    }
+})
+
+cache = caches.get('default')
+
 class cognitoAuth(Default):
     def __init__(self, settings, logger, http_client=None):
         super().__init__(settings, logger, http_client)
@@ -51,30 +63,46 @@ class cognitoAuth(Default):
                                 detail="No token provided",
                                 headers={"WWW-Authenticate": "Bearer"},
                             )
-       
-        try:
-            # Validate the token against AWS Cognito
-            decoded_token = self.validate_cognito_token(token)
-            if decoded_token.get("client_id") != self.client_id:
-                raise HTTPException(
-                                status_code=status.HTTP_401_UNAUTHORIZED,
-                                detail="Invalid token provided",
-                                headers={"WWW-Authenticate": "Bearer"},
-                            )
+        # Token extracted, let's start testing it
 
-            # Optionally, check custom claims or other parts of the token
+        # Check if token is cached
+        valid = await cache.get(token)
+        if valid is not None:
+            if not valid:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid token (cached)",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            return True
+    
+        # Token not cached, Validate it against AWS Cognito
+        try:
+            decoded_token = self.validate_cognito_token(token)
+            valid = decoded_token.get("client_id") == self.client_id
             
+        
+            # Store in cache (cache both valid and invalid results)
+            await cache.set(token, valid, ttl=3000)  # cache result for 50 minutes
+    
+            if not valid:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid token",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
             return True
 
+
         except (DecodeError, ExpiredSignatureError) as e:
-            
+            await cache.set(token, False, ttl=3000)  # cache result for 50 minutes - it's definately invalid
             raise HTTPException(
                                 status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="Invalid token provided",
                                 headers={"WWW-Authenticate": "Bearer"},
                             )
         except (BotoCoreError, ClientError) as e:
-            
+            # don't cache this, as it might be a connection error or similar
             raise HTTPException(
                                 status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="Invalid token provided",
