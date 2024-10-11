@@ -16,8 +16,7 @@ class Settings(BaseSettings):
     http_client_timeout: int = 300
     request_timeout: int = 300
     api_v3_integration: str = ""
-    idp_url: str = ""
-    client_id: str = ""
+
     client_secret: str = ""
     organization_id: str = ""
 
@@ -35,6 +34,12 @@ class Settings(BaseSettings):
     max_thumbnail_size: int = 500
     root_path: str = ""
 
+    # Cognito Specific Settings:
+    cognito_user_pool_id: str = ""
+    aws_region: str = ""
+    idp_url: str = ""
+    client_id: str = ""
+    
     # default color for padding of image regions out of image extent
     padding_color: tuple = (255, 255, 255)
 
