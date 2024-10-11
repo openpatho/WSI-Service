@@ -1,6 +1,5 @@
 import os
 import time
-import boto3
 import jwt  # Alternatively, you can use from jose import jwt
 from wsi_service.api.v3.integrations.default import Default
 from botocore.exceptions import BotoCoreError, ClientError
@@ -14,7 +13,6 @@ class cognitoAuth(Default):
         self.cognito_user_pool_id = settings.cognito_user_pool_id  # Add this to settings
         self.aws_region = settings.aws_region  # Add this to settings
 
-        self.cognito_client = boto3.client('cognito-idp', region_name=self.aws_region)
 
     async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None , calling_function=None):
         # Extract the token from the payload
@@ -23,13 +21,21 @@ class cognitoAuth(Default):
             if len(testtoken) > 20: # ignores anything too short in the token string
                 token = testtoken
         if not token:
-            raise PermissionError("No token provided")
+            raise HTTPException(
+                                status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="No token provided",
+                                headers={"WWW-Authenticate": "Bearer"},
+                            )
 
         try:
             # Validate the token against AWS Cognito
             decoded_token = self.validate_cognito_token(token)
             if decoded_token.get("client_id") != self.client_id:
-                raise PermissionError("Invalid client ID")
+                raise HTTPException(
+                                status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="Invalid token provided",
+                                headers={"WWW-Authenticate": "Bearer"},
+                            )
 
             # Optionally, check custom claims or other parts of the token
             return True
