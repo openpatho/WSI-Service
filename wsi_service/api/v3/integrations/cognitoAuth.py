@@ -41,9 +41,17 @@ class cognitoAuth(Default):
             return True
 
         except (DecodeError, ExpiredSignatureError) as e:
-            raise PermissionError(f"Invalid token: {str(e)}")
+            raise HTTPException(
+                                status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="Invalid token provided",
+                                headers={"WWW-Authenticate": "Bearer"},
+                            )
         except (BotoCoreError, ClientError) as e:
-            raise PermissionError(f"Error validating token with Cognito: {str(e)}")
+            raise HTTPException(
+                                status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="Invalid token provided",
+                                headers={"WWW-Authenticate": "Bearer"},
+                            )
 
     def validate_cognito_token(token):
         headers = jwt.get_unverified_header(token)
