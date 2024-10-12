@@ -4,6 +4,8 @@ import asyncio
 from fastapi import Path, Depends, Header
 from fastapi.responses import FileResponse
 
+from fastapi import File, UploadFile
+
 import httpx
 import json
 
@@ -60,3 +62,53 @@ def add_routes_annotations(app, settings, slide_manager):
             with open(str(anoPath), "w") as file:
                 json.dump(json_output, file)
             return FileResponse(path=str(anoPath), filename="annotations.json", media_type="application/json")
+
+
+    @app.put(
+        "/annotations/native",
+        responses={
+            200: {
+                "description": "Successfully updated the annotations from the provided JSON file.",
+                "content": {"application/json": {}}
+            }
+        },
+        description="Accepts a JSON file with annotations and updates the annotations for the specified slide.",
+        tags=["Main Routes"]
+    )
+    async def _(slide_id: str = SlideQuery, plugin: str = PluginQuery, file: UploadFile = File(...), payload: Optional[str] = Depends(get_authorization_header)):
+        
+        slide = await slide_manager.get_slide_info(slide_id, slide_info_model=SlideInfo, plugin=plugin)
+        await api_integration.allow_access_slide(calling_function="/slides/info",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
+                                                 plugin=plugin, slide=slide)
+        
+        
+        fileNames = await slide_manager.get_slide_file_paths(slide_id)
+        anoPath = Path(fileNames[0]).with_suffix(".json")
+    
+        try:
+            # Open the file directly and save it to disk
+            with open(str(anoPath), "wb") as f:
+                f.write(file.file.read())  # Write the uploaded file directly to disk
+        
+            # Optionally, you could log the size of the file for validation
+            bytes_written = file.file.tell()  # Get the size of the file after writing
+        
+            # Assuming successful operation
+            success = True
+        
+            return {
+                "status": True,
+                "slide_id": slide_id,
+                "plugin": plugin,
+                "bytes_written": bytes_written,
+                "message": "Annotations updated successfully"
+            }
+        except:
+            traceback.print_exc()
+            return {
+                "status": False,
+                "slide_id": slide_id,
+                "plugin": plugin,
+                "bytes_written": 0,
+                "message": "Failed to update annotations"
+            }
