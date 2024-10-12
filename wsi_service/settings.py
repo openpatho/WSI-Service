@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     client_id: str = ""
     jwks_url: str = ""
 
+    # Anotations Endpoint Settings:
+    annotation_api: str = ""
+
     # prod mode to disable docs & enable auth
     prod_mode: bool = False
     

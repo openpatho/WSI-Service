@@ -16,3 +16,4 @@ COMPOSE_WS_PORT=8080
 COMPOSE_DATA_DIR=/home/martin/xopat/WSI-Service/data/
 
 WS_PROD_MODE=False
+WS_ANNOTATION_API=http://anotations-api:5000/native_annotations/
