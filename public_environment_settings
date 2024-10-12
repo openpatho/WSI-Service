@@ -15,3 +15,4 @@ COMPOSE_NETWORK=default
 COMPOSE_WS_PORT=8080
 COMPOSE_DATA_DIR=/home/martin/xopat/WSI-Service/data/
 
+WS_PROD_MODE=False
