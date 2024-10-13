@@ -48,27 +48,41 @@ RUN poetry install
 FROM ubuntu:22.04@sha256:bcc511d82482900604524a8e8d64bf4c53b2461868dac55f4d04d660e61983cb AS wsi_service_intermediate
 
 RUN apt-get update \
-  && apt-get install --no-install-recommends -y build-essential python3-pip curl python3-packaging python3-dev \
+  && apt-get install --no-install-recommends -y build-essential python3-pip curl python3-packaging python3-dev curl ca-certificates\
   && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /artifacts
+
+######## uv installation ##########
+
+# Download the latest installer
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
+
+# Run the installer then remove it
+RUN sh /uv-installer.sh && rm /uv-installer.sh
+
+# Ensure the installed binary is on the `PATH`
+ENV PATH="/root/.cargo/bin/:$PATH"
+
+####### continue docker ###########
+
+
+
 COPY --from=wsi_service_build /wsi-service/requirements.txt /artifacts
 
 COPY wsi_service/utils/cloudwrappers/requirements.txt /artifacts/cw_requirements.txt
 
-RUN pip install -r /artifacts/requirements.txt 
-RUN pip install -r /artifacts/cw_requirements.txt
-
 COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/openslide/requirements.txt /artifacts/requirements_openslide.txt
-RUN pip install -r /artifacts/requirements_openslide.txt
+
 COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/pil/requirements.txt /artifacts/requirements_pil.txt
-RUN pip install -r /artifacts/requirements_pil.txt
+
 COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/tifffile/requirements.txt /artifacts/requirements_tiffile.txt
-RUN pip install -r /artifacts/requirements_tiffile.txt
+
 COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/tiffslide/requirements.txt /artifacts/requirements_tiffslide.txt
-RUN pip install -r /artifacts/requirements_tiffslide.txt
+
 COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/wsidicom/requirements.txt /artifacts/requirements_wsidicom.txt
-RUN pip install -r /artifacts/requirements_wsidicom.txt
+
+RUN uv pip install -r /artifacts/requirements.txt -r /artifacts/cw_requirements.txt -r /artifacts/requirements_openslide.txt -r /artifacts/requirements_pil.txt -r /artifacts/requirements_tiffile.txt -r /artifacts/requirements_tiffslide.txt -r /artifacts/requirements_wsidicom.txt --system
 
 COPY --from=wsi_service_build /wsi-service/dist/ /wsi-service/dist/
 COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/openslide/dist/ /wsi-service/dist/
@@ -77,7 +91,7 @@ COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/tifffile/dis
 COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/tiffslide/dist/ /wsi-service/dist/
 COPY --from=wsi_service_build /wsi-service/wsi_service_base_plugins/wsidicom/dist/ /wsi-service/dist/
 
-RUN pip3 install /wsi-service/dist/*.whl
+RUN uv pip install /wsi-service/dist/*.whl --system
 
 
 RUN mkdir /data

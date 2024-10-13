@@ -1,0 +1,14 @@
+cd openslide
+poetry update
+cd ../pil
+poetry update
+cd ../tifffile
+poetry update
+cd ../tifffile_generic
+poetry update
+cd ../tiffslide
+poetry update
+cd ../vips
+poetry update
+cd ../wsidicom
+poetry update

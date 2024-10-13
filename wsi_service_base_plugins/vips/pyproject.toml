@@ -8,6 +8,8 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
 pyvips = "^2.0.0"
+urllib3 = ">=2.2.3"
+numpy = "^1.22.3"
 
 [tool.poetry.dev-dependencies]
 psutil = "^5.9.0"
