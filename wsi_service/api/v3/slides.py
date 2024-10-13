@@ -56,7 +56,8 @@ except:
 redislogger = RedisLogger() 
 
 def log_slide_access(slide_id):
-    redislogger.add_slide_access_log({"slide_id":slide_id})
+    log_data = {"slide_id":slide_id}
+    redislogger.add_slide_access_log(log_data)
 
 async def get_authorization_header(authorization: Optional[str] = Header(None)):
     return authorization
@@ -379,6 +380,9 @@ def add_routes_slides(app, settings, slide_manager):
         requests = [api_integration.allow_access_slide(calling_function="/batch/info",auth_payload=payload, slide_id=slide.id, manager=slide_manager,
                                                        plugin=plugin, slide=slide) for slide in slide_list]
         await asyncio.gather(*requests)
+
+        _ = [log_slide_access(slide) for slide in slide_ids]
+        
         return slide_list
 
     @app.get(
@@ -414,6 +418,7 @@ def add_routes_slides(app, settings, slide_manager):
 
         requests = map(lambda slide: slide.get_thumbnail(max_x, max_y), slides)
         thumbnails = await asyncio.gather(*requests)
+        _ = [log_slide_access(slide) for slide in slide_ids]
         return batch_safe_make_response(slides, thumbnails, image_format, image_quality)
 
     @app.get(
@@ -448,6 +453,7 @@ def add_routes_slides(app, settings, slide_manager):
         requests = map(lambda slide: slide.get_label(), slides)
         labels = await asyncio.gather(*requests)
         map(lambda l: l.thumbnail((max_x, max_y), Image.ANTIALIAS), labels)
+        _ = [log_slide_access(slide) for slide in slide_ids]
         return batch_safe_make_response(
             slides,
             labels,
@@ -486,6 +492,7 @@ def add_routes_slides(app, settings, slide_manager):
         requests = map(lambda slide: slide.get_macro(), slides)
         macros = await asyncio.gather(*requests)
         map(lambda m: m.thumbnail((max_x, max_y), Image.ANTIALIAS), macros)
+        _ = [log_slide_access(slide) for slide in slide_ids]
         return batch_safe_make_response(
             slides,
             macros,
@@ -538,6 +545,7 @@ def add_routes_slides(app, settings, slide_manager):
                                                      image_channels, vp_color, z),
                        range(slides.__len__()))
         regions = await asyncio.gather(*requests)
+        _ = [log_slide_access(slide) for slide in slide_ids]
         return batch_safe_make_response(slides, regions, image_format, image_quality, image_channels)
 
     # To allow for diverse regions etc..
@@ -586,6 +594,7 @@ def add_routes_slides(app, settings, slide_manager):
                        range(slides.__len__()))
 
         regions = await asyncio.gather(*requests)
+        _ = [log_slide_access(slide) for slide in slide_ids]
         return batch_safe_make_response(slides, regions, image_format, image_quality, image_channels)
 
     
