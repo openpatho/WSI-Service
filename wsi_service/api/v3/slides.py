@@ -48,6 +48,16 @@ from wsi_service.utils.image_utils import (
 )
 from .singletons import api_integration
 
+try:
+    from wsi_service.utils.cloudwrappers.redis_openpatho import RedisLogger
+except:
+    from utils.cloudwrappers.redis_openpatho import RedisLogger
+
+redislogger = RedisLogger() 
+
+def log_slide_access(slide_id):
+    redislogger.add_slide_access_log({"slide_id":slide_id})
+
 async def get_authorization_header(authorization: Optional[str] = Header(None)):
     return authorization
 
@@ -60,6 +70,7 @@ def add_routes_slides(app, settings, slide_manager):
         slide = await slide_manager.get_slide_info(slide_id, slide_info_model=SlideInfo, plugin=plugin)
         await api_integration.allow_access_slide(calling_function="/slides/info",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
                                                  plugin=plugin, slide=slide)
+        log_slide_access(slide_id)
         return slide
         
     @app.get("/slides/filepath", response_model=List[str], tags=["Main Routes"])
@@ -68,7 +79,7 @@ def add_routes_slides(app, settings, slide_manager):
         Get the path to the file on the server for a slide, given its ID
         """
         path = await slide_manager.get_slide_file_paths(slide_id)
-        
+        log_slide_access(slide_id)
         return path
         
     @app.get(
@@ -104,6 +115,7 @@ def add_routes_slides(app, settings, slide_manager):
                                                  plugin=plugin)
         slide = await slide_manager.get_slide(slide_id, plugin=plugin)
         thumbnail = await slide.get_thumbnail(max_x, max_y)
+        log_slide_access(slide_id)
         return make_response(slide, thumbnail, image_format, image_quality)
 
     @app.get(
@@ -136,6 +148,7 @@ def add_routes_slides(app, settings, slide_manager):
         slide = await slide_manager.get_slide(slide_id, plugin=plugin)
         label = await slide.get_label()
         label.thumbnail((max_x, max_y), Image.Resampling.LANCZOS)
+        log_slide_access(slide_id)
         return make_response(slide, label, image_format, image_quality)
 
     @app.get(
@@ -168,6 +181,7 @@ def add_routes_slides(app, settings, slide_manager):
         slide = await slide_manager.get_slide(slide_id, plugin=plugin)
         macro = await slide.get_macro()
         macro.thumbnail((max_x, max_y), Image.Resampling.LANCZOS)
+        log_slide_access(slide_id)
         return make_response(slide, macro, image_format, image_quality)
 
     @app.get(
@@ -234,6 +248,7 @@ def add_routes_slides(app, settings, slide_manager):
         vp_color = validate_hex_color_string(padding_color)
         validate_image_request(image_format, image_quality)
         validate_image_size(size_x, size_y)
+        log_slide_access(slide_id)
         await api_integration.allow_access_slide(calling_function=f"/slides/region/level/{level}/start/{start_x}/{start_y}/size/{size_x}/{size_y}",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
                                                  plugin=plugin)
         slide = await slide_manager.get_slide(slide_id, plugin=plugin)
@@ -247,6 +262,8 @@ def add_routes_slides(app, settings, slide_manager):
             image_region = await get_extended_region(
                 slide.get_region, slide_info, level, start_x, start_y, size_x, size_y, padding_color=vp_color, z=z
             )
+        
+        log_slide_access(slide_id)
         return make_response(slide, image_region, image_format, image_quality, image_channels)
 
     @app.get(
@@ -321,6 +338,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_tile = await get_extended_tile(
                 slide.get_tile, slide_info, level, tile_x, tile_y, padding_color=vp_color, z=z
             )
+        log_slide_access(slide_id)
         return make_response(slide, image_tile, image_format, image_quality, image_channels)
 
     @app.get("/slides/download", tags=["Main Routes"])
@@ -337,6 +355,7 @@ def add_routes_slides(app, settings, slide_manager):
         # expanded to include the files they contain, and then removed.
         paths = remove_folders(expand_folders(paths))
         zf = ZipFly(paths=get_zipfly_paths(paths), chunksize="1_000_000")
+        log_slide_access(slide_id)
         return StreamingResponse(
             zf.generator(),
             media_type="application/zip",
