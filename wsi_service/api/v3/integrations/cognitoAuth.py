@@ -122,6 +122,6 @@ class cognitoAuth(Default):
     
         # Use the key to validate the token (you can use PyJWT or any other library here)
         public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
-        decoded_token = jwt.decode(token, public_key, algorithms=["RS256"],options={"verify_exp": False})
+        decoded_token = jwt.decode(token, public_key, algorithms=["RS256"],options={"verify_exp": True})
     
         return decoded_token

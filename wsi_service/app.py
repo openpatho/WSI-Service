@@ -109,6 +109,10 @@ async def log_requests(request: Request, call_next):
 
     # Proceed with the request
     response = await call_next(request)
+    
+    # Add 30 minute Cache-Control header
+    response.headers["Cache-Control"] = "private, max-age=1800"
+    
     return response
 
 @app.get("/health")
