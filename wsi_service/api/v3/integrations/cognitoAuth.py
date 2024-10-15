@@ -109,7 +109,7 @@ class cognitoAuth(Default):
                                 headers={"WWW-Authenticate": "Bearer"},
                             )
 
-    def validate_cognito_token(token):
+    def validate_cognito_token(self, token):
         headers = jwt.get_unverified_header(token)
         kid = headers["kid"]
     

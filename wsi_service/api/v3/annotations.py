@@ -2,7 +2,7 @@ from typing import List, Optional
 import asyncio
 
 from fastapi import Path, Depends, Header
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 from fastapi import File, UploadFile
 
@@ -30,13 +30,7 @@ async def get_authorization_header(authorization: Optional[str] = Header(None)):
 def add_routes_annotations(app, settings, slide_manager):
     @app.get(
         "/annotations/native", 
-        response_class=FileResponse, 
-        responses={
-            200: {
-                "description": "A JSON file containing the annotations.",
-                "content": {"application/json": {}}
-            }
-        },
+        response_class=JSONResponse,
         description="Accepts the main slide image's ID and returns all of the annotations in 'Native' JSON format",
         tags=["Main Routes"]
     )
@@ -53,15 +47,17 @@ def add_routes_annotations(app, settings, slide_manager):
         anoPath = Path(fileNames[0]).with_suffix(".json")
         
         if anoPath.exists() and not skip_cache:
-            return FileResponse(path=str(anoPath), filename="annotations.json", media_type="application/json")
+            with open(str(anoPath),"r") as f:
+                data = f.read()
+            return data
         else:
             async with httpx.AsyncClient() as client:
                 response = await client.get(f"{settings.annotation_api}?slide_id={slide_id}")  # Replace with the actual URL
-                json_output = response.json()  # Parse the JSON output
+                json_output = response.text  # Parse the JSON output
         
             with open(str(anoPath), "w") as file:
-                json.dump(json_output, file)
-            return FileResponse(path=str(anoPath), filename="annotations.json", media_type="application/json")
+                file.write(json_output)
+            return json_output
 
 
     @app.put(

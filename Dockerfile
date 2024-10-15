@@ -123,6 +123,7 @@ EXPOSE 8080/tcp
 WORKDIR /usr/local/lib/python3.10/dist-packages/wsi_service
 
 COPY public_environment_settings .env
+COPY wsi_service/api/v3/integrations/.env cog.env
 
 
 CMD ["python3", "-m", "uvicorn", "wsi_service.app:app", "--host", "0.0.0.0", "--port", "8080", "--loop=uvloop", "--http=httptools"]
