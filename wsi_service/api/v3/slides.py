@@ -370,6 +370,7 @@ def add_routes_slides(app, settings, slide_manager):
     ##
     @app.get("/batch/info", response_model=List[SlideInfo], tags=["Main Routes"])
     async def _(slide_ids: str = SlideListQuery, plugin: str = PluginQuery, payload: Optional[str] = Depends(get_authorization_header)):
+        
         """
         Get metadata information for a slide set (see description above sister function)
         """
@@ -384,6 +385,7 @@ def add_routes_slides(app, settings, slide_manager):
         _ = [log_slide_access(slide) for slide in slide_ids]
         
         return slide_list
+        
 
     @app.get(
         "/batch/thumbnail/max_size/{max_x}/{max_y}",

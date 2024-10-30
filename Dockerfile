@@ -103,20 +103,13 @@ RUN apt-get update \
   && apt-get install --no-install-recommends -y python3 python3-pip curl python3-packaging \
   && rm -rf /var/lib/apt/lists/*
 
-RUN adduser --disabled-password --gecos '' appuser \
-  && mkdir /artifacts && chown appuser:appuser /artifacts \
-  && mkdir -p /opt/app/bin && chown appuser:appuser /opt/app/bin
-USER appuser
+COPY --from=wsi_service_build /openslide_deps/* /usr/lib/x86_64-linux-gnu/
 
-COPY --chown=appuser --from=wsi_service_build /openslide_deps/* /usr/lib/x86_64-linux-gnu/
-
-COPY --chown=appuser --from=wsi_service_intermediate /usr/local/lib/python3.10/dist-packages/ /usr/local/lib/python3.10/dist-packages/
-COPY --chown=appuser --from=wsi_service_intermediate /data /data
+COPY --from=wsi_service_intermediate /usr/local/lib/python3.10/dist-packages/ /usr/local/lib/python3.10/dist-packages/
+COPY --from=wsi_service_intermediate /data /data
 
 
 ENV WEB_CONCURRENCY=8
-
-
 
 EXPOSE 8080/tcp
 
@@ -124,6 +117,5 @@ WORKDIR /usr/local/lib/python3.10/dist-packages/wsi_service
 
 COPY public_environment_settings .env
 COPY wsi_service/api/v3/integrations/.env cog.env
-
 
 CMD ["python3", "-m", "uvicorn", "wsi_service.app:app", "--host", "0.0.0.0", "--port", "8080", "--loop=uvloop", "--http=httptools"]

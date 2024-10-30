@@ -32,7 +32,7 @@ class SimpleMapper:
                 data["data_dir"] = self.data_dir
                 data["case_map"] = self.case_map
                 data["slide_map"] = self.slide_map
-                ic(data)
+                #ic(data)
                 with open("local_mapper.p", "wb") as f:
                     pickle.dump(data, f)
         

@@ -38,26 +38,49 @@ def add_routes_annotations(app, settings, slide_manager):
         """
         Fetch the annotations in Native format for the specified slide
         """
-        slide = await slide_manager.get_slide_info(slide_id, slide_info_model=SlideInfo, plugin=plugin)
+
+        
+        print("Checking Access")
         await api_integration.allow_access_slide(calling_function="/slides/info",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
-                                                 plugin=plugin, slide=slide)
+                                                 plugin=plugin, slide=None)
+
+        #print("Getting Slide")
+        #slide = await slide_manager.get_slide_info(slide_id, slide_info_model=SlideInfo, plugin=plugin)
         
-        
+        print("Getting filename")
         fileNames = await slide_manager.get_slide_file_paths(slide_id)
         anoPath = Path(fileNames[0]).with_suffix(".json")
+
+        print("Temporarily over-riding the cache")
+        skip_cache = True
         
         if anoPath.exists() and not skip_cache:
+            print("Getting Anotations from cache")
             with open(str(anoPath),"r") as f:
                 data = f.read()
             return data
         else:
-            async with httpx.AsyncClient() as client:
-                response = await client.get(f"{settings.annotation_api}?slide_id={slide_id}")  # Replace with the actual URL
-                json_output = response.text  # Parse the JSON output
-        
-            with open(str(anoPath), "w") as file:
-                file.write(json_output)
-            return json_output
+            print("Getting Anotations from anotations api")
+            try:
+                async with httpx.AsyncClient() as client:
+                    print("Inside With - contacting:")
+                    print(settings.annotation_api)
+                    response = await client.post(f"{settings.annotation_api}",json={"slide_id":slide_id,"auth_token":payload})  # Replace with the actual URL
+                    print(f"Response status was: {response.status_code}")
+                    print(f"Response text was a {type(response.json())}, {len(response.json())} in length")
+                    json_output = response.text  # Parse the JSON output
+            
+                try:
+                    with open(str(anoPath), "w") as file:
+                        file.write(json_output)
+                    return json_output
+                except:
+                    print("File Writing Error for Cache")
+                    pass
+            except Exception as ex:
+                print(f"What went wrong: {ex}")
+                raise ex
+                
 
 
     @app.put(
@@ -73,9 +96,9 @@ def add_routes_annotations(app, settings, slide_manager):
     )
     async def _(slide_id: str = SlideQuery, plugin: str = PluginQuery, file: UploadFile = File(...), payload: Optional[str] = Depends(get_authorization_header)):
         
-        slide = await slide_manager.get_slide_info(slide_id, slide_info_model=SlideInfo, plugin=plugin)
-        await api_integration.allow_access_slide(calling_function="/slides/info",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
-                                                 plugin=plugin, slide=slide)
+        #slide = await slide_manager.get_slide_info(slide_id, slide_info_model=SlideInfo, plugin=plugin)
+        #await api_integration.allow_access_slide(calling_function="/slides/info",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
+        #                                         plugin=plugin, slide=slide)
         
         
         fileNames = await slide_manager.get_slide_file_paths(slide_id)
