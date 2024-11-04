@@ -67,7 +67,9 @@ def add_routes_annotations(app, settings, slide_manager):
                     print(settings.annotation_api)
                     response = await client.post(f"{settings.annotation_api}",json={"slide_id":slide_id,"auth_token":payload})  # Replace with the actual URL
                     print(f"Response status was: {response.status_code}")
-                    print(f"Response text was a {type(response.json())}, {len(response.json())} in length")
+                    print(f"Response text was a {type(response.json())}")
+                    if response.json() is not None:
+                        print(f"Response Json was {len(response.json())} in length")
                     json_output = response.text  # Parse the JSON output
             
                 try:

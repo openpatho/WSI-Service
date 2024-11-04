@@ -33,11 +33,11 @@ async def load_slide(filepath, plugin=None):
                 detail=f"Selected plugin {plugin} is not available or does not support this slide. Please specify another plugin.",
             )
 
-    print("supported", supported_plugins)
+    #print("supported", supported_plugins)
     exception_details = ""
     for plugin_name, plugin in _get_sorted_plugins(supported_plugins):
         try:
-            print("trying", plugin_name)
+            #print("trying", plugin_name)
             return await _open_slide(plugin, plugin_name, filepath)
         except HTTPException as e:
             exception_details += e.detail + ". "
