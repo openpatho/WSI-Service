@@ -97,7 +97,7 @@ async def log_requests(request: Request, call_next):
 
     # Create the log entry
     log_entry = {
-        "service name":"Tile Server",
+        "service name":"wsi_service",
         "method": method,
         "path": path,
         "query_params": query_params,
