@@ -79,7 +79,7 @@ def log_api_call(log_entry):
     redislogger.add_health_log(log_entry)
 
 def get_last_api_calls(service_name):
-    redislogger.read_filtered_health_log(service_name, limit=5)
+    redislogger.get_last_activity_time(service_name)
         
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
@@ -119,7 +119,7 @@ async def log_requests(request: Request, call_next):
 async def health_check():
     # Retrieve the last 10 API calls from Redis
     try:
-        last_calls = get_last_api_calls("ingestion api")
+        last_calls = get_last_api_calls("wsi_service")
         return {"status": "healthy", "last_calls": last_calls}
     except:
         print("error in health log retrieval")
