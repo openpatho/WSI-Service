@@ -65,7 +65,7 @@ def add_routes_annotations(app, settings, slide_manager):
                 async with httpx.AsyncClient() as client:
                     print("Inside With - contacting:")
                     print(settings.annotation_api)
-                    response = await client.post(f"{settings.annotation_api}",json={"slide_id":slide_id,"auth_token":payload})  # Replace with the actual URL
+                    response = await client.post(f"{settings.annotation_api}",json={"slide_id":slide_id,"auth_token":payload})  
                     print(f"Response status was: {response.status_code}")
                     print(f"Response text was a {type(response.json())}")
                     if response.json() is not None:
