@@ -5,7 +5,7 @@ from fastapi import Path, Depends, Header
 from fastapi.responses import FileResponse, JSONResponse
 
 from fastapi import File, UploadFile
-
+import traceback
 import httpx
 import json
 
@@ -62,7 +62,7 @@ def add_routes_annotations(app, settings, slide_manager):
         else:
             print("Getting Anotations from anotations api")
             try:
-                async with httpx.AsyncClient() as client:
+                async with httpx.AsyncClient(timeout=60.0) as client:
                     print("Inside With - contacting:")
                     print(settings.annotation_api)
                     response = await client.post(f"{settings.annotation_api}",json={"slide_id":slide_id,"auth_token":payload})  
@@ -81,6 +81,7 @@ def add_routes_annotations(app, settings, slide_manager):
                     pass
             except Exception as ex:
                 print(f"What went wrong: {ex}")
+                traceback.print_exc()
                 raise ex
                 
 
