@@ -382,9 +382,9 @@ def add_routes_slides(app, settings, slide_manager):
                        slide_ids)
         print("made requests")
         slide_list = await asyncio.gather(*requests)
-        print("gather 1")
-        requests = [api_integration.allow_access_slide(calling_function="/batch/info",auth_payload=payload, slide_id=slide.id, manager=slide_manager,
-                                                       plugin=plugin, slide=slide) for slide in slide_list]
+        print("after gather 1")
+        requests = [api_integration.allow_access_slide(calling_function="/batch/info",auth_payload=payload, slide_id=slide, manager=slide_manager,
+                                                       plugin=plugin, slide=slide) for slide in slide_ids]
         print("auth complete")
         await asyncio.gather(*requests)
         print("gather 2")
