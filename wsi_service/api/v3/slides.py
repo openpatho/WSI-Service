@@ -77,7 +77,7 @@ def add_routes_slides(app, settings, slide_manager):
         return slide
         
     @app.get("/slides/filepath", response_model=List[str], tags=["Main Routes"])
-    async def _(slide_id: str = SlideQuery, payload: Optional[str] = Depends(get_authorization_header)):
+    async def _(slide_id: str = IdQuery, payload: Optional[str] = Depends(get_authorization_header)):
         """
         Get the path to the file on the server for a slide, given its ID
         """
