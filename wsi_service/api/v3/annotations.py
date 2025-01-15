@@ -64,13 +64,13 @@ def add_routes_annotations(app, settings, slide_manager):
             print("Getting Anotations from anotations api")
             try:
                 async with httpx.AsyncClient(timeout=60.0) as client:
-                    print("Inside With - contacting:")
-                    print(settings.annotation_api)
+                    #print("Inside With - contacting:")
+                    #print(settings.annotation_api)
                     response = await client.post(f"{settings.annotation_api}",json={"slide_id":slide_id,"auth_token":payload})  
-                    print(f"Response status was: {response.status_code}")
-                    print(f"Response text was a {type(response.json())}")
+                    #print(f"Response status was: {response.status_code}")
+                    #print(f"Response text was a {type(response.json())}")
                     if response.json() is not None:
-                        print(f"Text was {len(response.text)} long, parsed response Json was {len(response.json())} in 'length'")
+                        print(f"Text was {len(response.text)} long, parsed response Json was a {type(response.json())}, {len(response.json())} in 'length'")
                     json_output = response.text  # Parse the JSON output
             
                 try:
@@ -81,7 +81,7 @@ def add_routes_annotations(app, settings, slide_manager):
                     print(f"File Writing Error for Cache: {e}")
                     print(f"File write location already existed: {anoPath.exists()}")
                     print(f"anoPath is writable: {os.access(str(anoPath.parents[0]), os.W_OK)}")
-                    print(f"Path permissions: {oct(anoPath.stat().st_mode)}")
+                    print(f"anoPath permissions: {oct(anoPath.stat().st_mode)}")
                     pass
                 return json_output
             except Exception as ex:
