@@ -69,15 +69,15 @@ def add_routes_annotations(app, settings, slide_manager):
                     print(f"Response status was: {response.status_code}")
                     print(f"Response text was a {type(response.json())}")
                     if response.json() is not None:
-                        print(f"Response Json was {len(response.json())} in length")
+                        print(f"Text was {len(response.text)} long, parsed response Json was {len(response.json())} in 'length'")
                     json_output = response.text  # Parse the JSON output
             
                 try:
                     with open(str(anoPath), "w") as file:
                         file.write(json_output)
                     return json_output
-                except:
-                    print("File Writing Error for Cache")
+                except Exception as e:
+                    print(f"File Writing Error for Cache: {e}")
                     pass
             except Exception as ex:
                 print(f"What went wrong: {ex}")
