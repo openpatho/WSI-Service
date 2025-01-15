@@ -12,7 +12,8 @@ from wsi_service.custom_models.queries import (
     ImagePaddingColorQuery,
     ImageQualityQuery,
     PluginQuery,
-    ZStackQuery, IdQuery,
+    ZStackQuery, IdQuery, 
+    SlideQuery 
 )
 from wsi_service.custom_models.responses import ImageRegionResponse, ImageResponses
 from wsi_service.models.v3.slide import SlideInfo
