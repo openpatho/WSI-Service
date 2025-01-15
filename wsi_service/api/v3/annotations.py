@@ -8,6 +8,7 @@ from fastapi import File, UploadFile
 import traceback
 import httpx
 import json
+import os
 
 from pathlib import Path
 
@@ -75,10 +76,13 @@ def add_routes_annotations(app, settings, slide_manager):
                 try:
                     with open(str(anoPath), "w") as file:
                         file.write(json_output)
-                    return json_output
+                    
                 except Exception as e:
                     print(f"File Writing Error for Cache: {e}")
+                    print(f"File write location already existed: {anoPath.exists()}")
+                    print(f"anoPath is writable: {os.access(str(anoPath.parents[0]), os.W_OK)}")
                     pass
+                return json_output
             except Exception as ex:
                 print(f"What went wrong: {ex}")
                 traceback.print_exc()
