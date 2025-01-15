@@ -25,6 +25,6 @@ class Default:
         """Basic authentication by (callback) dependency injection. Callback should return auth payload if any."""
         return Depends(_unauthorized)
 
-    async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None):
+    async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None, calling_function=None):
         print("in default auth")
         ...

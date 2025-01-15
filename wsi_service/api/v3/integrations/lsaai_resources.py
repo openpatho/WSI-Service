@@ -90,7 +90,7 @@ class LSAAIIntegration(OAuthIntegration):
         project_list = user_data[institution]
         return project in project_list
 
-    async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None):
+    async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None, calling_function=None):
         print("in isaai_resources auth")
         try:
             if isinstance(slide, SlideInfo):
