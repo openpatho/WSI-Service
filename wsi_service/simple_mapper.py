@@ -20,13 +20,13 @@ class SimpleMapper:
         self.refresh(force_refresh=False)
 
     def refresh(self, force_refresh=True):
-        ic("refreshing mapper")
+        #ic("refreshing mapper")
         with FileLock("local_mapper.lock"):
-            ic("inside lock")
+            #ic("inside lock")
             data_dir_changed = self._get_data_dir_changed()
-            ic(force_refresh,data_dir_changed,os.path.exists('local_mapper.p'))
+            #ic(force_refresh,data_dir_changed,os.path.exists('local_mapper.p'))
             if force_refresh or data_dir_changed or not os.path.exists("local_mapper.p"):
-                ic("Starting directory Scan")
+                #ic("Starting directory Scan")
                 self._initialize_with_path(self.data_dir)
                 data = {}
                 data["data_dir"] = self.data_dir
@@ -39,11 +39,11 @@ class SimpleMapper:
         self.load()
 
     def load(self):
-        ic("load called")
+        #ic("load called")
         updated_hash = self._get_updated_hash()
         
         if self.hash != updated_hash:
-            ic("Starting load")
+            #ic("Starting load")
             with FileLock("local_mapper.lock"):
                 with open("local_mapper.p", "rb") as f:
                     data = pickle.load(f)
