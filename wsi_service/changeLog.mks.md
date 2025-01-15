@@ -12,6 +12,16 @@ Queries to the `/slides/info` endpoint, and probably others now take a `IdQuery`
         description="""Provide id.""",
     )
 
+## Annotations has not been updated 
+I've left the old `SlideQuery` class in annotation.py because I don't want to update all the dependent code:
+
+    SlideQuery = Query(
+        ...,
+        alias="slide",
+        example="b10648a7-340d-43fc-a2d9-4d91cc86f33f",
+        description="""Provide slide id to access.""",
+    )
+    
 ## Batch Endpoints names changed
 Instead of `/batch/info` it's now `/files/info` etc. The code within the endpoints appears to be the same
 

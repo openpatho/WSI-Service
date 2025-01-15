@@ -33,4 +33,11 @@ ImagePaddingColorQuery = Query(
 
 PluginQuery = Query(None, description="Select a specific WSI Service Plugin.")
 
+SlideQuery = Query(
+    ...,
+    alias="slide",
+    example="b10648a7-340d-43fc-a2d9-4d91cc86f33f",
+    description="""Provide slide id to access.""",
+)
+
 ZStackQuery = Query(0, ge=0, description="Z-Stack layer index z")
