@@ -13,7 +13,7 @@ from wsi_service.custom_models.queries import (
     ImageQualityQuery,
     PluginQuery,
     ZStackQuery, IdQuery, 
-    SlideQuery 
+    SlideQuery
 )
 from wsi_service.custom_models.responses import ImageRegionResponse, ImageResponses
 from wsi_service.models.v3.slide import SlideInfo
@@ -31,6 +31,7 @@ from wsi_service.custom_models.batch_queries import (
     TileLevelListQuery,
     TileXListQuery,
     TileYListQuery,
+    SlideListQuery
 )
 from wsi_service.utils.app_batch_utils import (
     batch_safe_make_response,
@@ -599,7 +600,7 @@ def add_routes_slides(app, settings, slide_manager):
     # OLD ENDPOINTS FOR BACKWARDS COMPATIBILITY #
     #############################################
     @app.get("/batch/info", response_model=List[SlideInfo], tags=["Main Routes"])
-    async def _(slides: str = IdListQuery, plugin: str = PluginQuery, payload=api_integration.global_depends()):
+    async def _(slides: str = SlideListQuery, plugin: str = PluginQuery, payload=api_integration.global_depends()):
         return await info(slides, plugin, payload)
     @app.get(
         "/batch/thumbnail/max_size/{max_x}/{max_y}",
@@ -608,7 +609,7 @@ def add_routes_slides(app, settings, slide_manager):
         tags=["Main Routes"],
     )
     async def _(
-            slides: str = IdListQuery,
+            slides: str = SlideListQuery,
             max_x: int = Path(example=100, ge=1, le=settings.max_thumbnail_size,
                               description="Maximum width of thumbnail"),
             max_y: int = Path(example=100, ge=1, le=settings.max_thumbnail_size,
@@ -626,7 +627,7 @@ def add_routes_slides(app, settings, slide_manager):
         tags=["Main Routes"],
     )
     async def _(
-            slides: str = IdListQuery,
+            slides: str = SlideListQuery,
             max_x: int = Path(example=100, description="Maximum width of label image"),
             max_y: int = Path(example=100, description="Maximum height of label image"),
             image_format: str = ImageFormatsQuery,
@@ -642,7 +643,7 @@ def add_routes_slides(app, settings, slide_manager):
         tags=["Main Routes"],
     )
     async def _(
-            slides: str = IdListQuery,
+            slides: str = SlideListQuery,
             max_x: int = Path(example=100, description="Maximum width of macro image"),
             max_y: int = Path(example=100, description="Maximum height of macro image"),
             image_format: str = ImageFormatsQuery,
@@ -658,7 +659,7 @@ def add_routes_slides(app, settings, slide_manager):
         tags=["Main Routes"],
     )
     async def _(
-            slides: str = IdListQuery,
+            slides: str = SlideListQuery,
             level: int = Path(ge=0, example=0, description="Pyramid level of region"),
             tile_x: int = Path(example=0, description="Request the tile_x-th tile in x dimension"),
             tile_y: int = Path(example=0, description="Request the tile_y-th tile in y dimension"),
@@ -678,7 +679,7 @@ def add_routes_slides(app, settings, slide_manager):
         tags=["Main Routes"],
     )
     async def _(
-            slides: str = IdListQuery,
+            slides: str = SlideListQuery,
             levels: str = TileLevelListQuery,
             xs: str = TileXListQuery,
             ys: str = TileYListQuery,
