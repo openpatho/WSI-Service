@@ -78,22 +78,13 @@ RUN mkdir /data
 FROM ubuntu:22.04@sha256:bcc511d82482900604524a8e8d64bf4c53b2461868dac55f4d04d660e61983cb AS wsi_service_production
 
 RUN apt-get update \
-  && apt-get install --no-install-recommends -y python3 python3-pip curl python3-packaging \
+  && apt-get install --no-install-recommends -y python3 python3-pip python3-packaging \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --from=wsi_service_build /openslide_deps/* /usr/lib/x86_64-linux-gnu/
+RUN adduser --disabled-password --gecos '' appuser \
+  && mkdir /artifacts && chown appuser:appuser /artifacts \
+  && mkdir -p /opt/app/bin && chown appuser:appuser /opt/app/bin
 
-COPY --chown=appuser --from=wsi_service_intermediate /usr/local/lib/python3.10/dist-packages/ /usr/local/lib/python3.10/dist-packages/
-COPY --chown=appuser --from=wsi_service_intermediate /data /data
-
-ENV WEB_CONCURRENCY=8
-
-EXPOSE 8080/tcp
-
-WORKDIR /usr/local/lib/python3.10/dist-packages/wsi_service
-
-COPY public_environment_settings .env
-COPY wsi_service/api/v3/integrations/.env cog.env
 # TODO move openslide build elsewhere to avoid expensive task last
 RUN apt-get update && apt-get install --no-install-recommends -y \
     build-essential meson ninja-build zlib1g-dev libzstd-dev libpng-dev \
@@ -111,5 +102,22 @@ RUN git clone https://github.com/iewchen/openslide.git /openslide-lib \
   && meson setup builddir \
   && meson compile -C builddir \
   && meson install -C builddir
+
+USER appuser
+
+COPY --chown=appuser --from=wsi_service_intermediate /usr/local/lib/python3.10/dist-packages/ /usr/local/lib/python3.10/dist-packages/
+COPY --chown=appuser --from=wsi_service_intermediate /data /data
+
+ENV WEB_CONCURRENCY=8
+
+EXPOSE 8080/tcp
+
+WORKDIR /usr/local/lib/python3.10/dist-packages/wsi_service
+
+COPY public_environment_settings .env
+COPY wsi_service/api/v3/integrations/.env cog.env
+
+
+
 
 CMD ["python3", "-m", "uvicorn", "wsi_service.app:app", "--host", "0.0.0.0", "--port", "8080", "--loop=uvloop", "--http=httptools"]
