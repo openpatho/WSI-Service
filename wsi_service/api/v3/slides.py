@@ -383,8 +383,13 @@ def add_routes_slides(app, settings, slide_manager):
         print("made requests")
         slide_list = await asyncio.gather(*requests)
         print("after gather 1")
-        requests = [api_integration.allow_access_slide(calling_function="/batch/info",auth_payload=payload, slide_id=slide, manager=slide_manager,
+        try:
+            requests = [api_integration.allow_access_slide(calling_function="/batch/info",auth_payload=payload, slide_id=slide, manager=slide_manager,
                                                        plugin=plugin, slide=slide) for slide in slide_ids]
+        except Exception as e:
+            print(f"Auth Failed: {e}")
+            raise e
+
         print("auth complete")
         await asyncio.gather(*requests)
         print("gather 2")

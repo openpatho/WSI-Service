@@ -22,6 +22,7 @@ class DebugAuth(Default):
         return Depends(dependency)
 
     async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None, calling_function=None):
+        print("in pickle auth")
         # Gather data into a dictionary
         try:
             

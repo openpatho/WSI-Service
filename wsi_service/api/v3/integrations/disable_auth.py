@@ -16,4 +16,5 @@ class DisableAuth:
         return Depends(_dummy)
 
     async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None):
+        print("in disable auth")
         ...

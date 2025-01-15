@@ -84,6 +84,7 @@ class LSAAIIntegration(OAuthIntegration):
 
 
     async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None):
+        print("in isaai auth")
         try:
             if isinstance(slide, SlideInfo):
                 self._slide_cache.put_item(slide_id, slide)
