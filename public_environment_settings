@@ -11,8 +11,6 @@ WS_MAX_RETURNED_REGION_SIZE=25000000
 WS_MAX_THUMBNAIL_SIZE=500
 WS_API_V3_INTEGRATION=wsi_service.api.v3.integrations.cognitoAuth:cognitoAuth
 
-# Auth
-WS_API_V3_INTEGRATION=wsi_service.api.v3.integrations.disable_auth:DisableAuth
 
 COMPOSE_RESTART=no
 COMPOSE_NETWORK=default
