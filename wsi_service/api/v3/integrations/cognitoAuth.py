@@ -31,7 +31,7 @@ class cognitoAuth(Default):
         self.jwks_url = settings.jwks_url
 
     @staticmethod
-    def global_depends(self):
+    def global_depends():
         # This function returns another function that FastAPI can use as a dependency
         async def dependency(authorization: str = Header(None)):
             # You can process the 'authorization' header here if needed

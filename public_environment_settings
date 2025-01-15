@@ -14,7 +14,7 @@ WS_API_V3_INTEGRATION=wsi_service.api.v3.integrations.cognitoAuth:cognitoAuth
 
 COMPOSE_RESTART=no
 COMPOSE_NETWORK=default
-COMPOSE_WS_PORT=8080
+COMPOSE_WS_PORT=8080a
 COMPOSE_DATA_DIR=/home/martin/xopat/WSI-Service/data/
 
 WS_PROD_MODE=False
