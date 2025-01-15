@@ -80,8 +80,11 @@ def add_routes_annotations(app, settings, slide_manager):
                 except Exception as e:
                     print(f"File Writing Error for Cache: {e}")
                     print(f"File write location already existed: {anoPath.exists()}")
-                    print(f"anoPath is writable: {os.access(str(anoPath.parents[0]), os.W_OK)}")
-                    print(f"anoPath permissions: {oct(anoPath.stat().st_mode)}")
+
+                    parent = Path(anoPath.parents[0])
+                    print(f"Owner UID: {parent.stat().st_uid}, Current UID: {os.getuid()}")
+                    print(f"Group GID: {parent.stat().st_gid}, Current GID: {os.getgid()}")
+                    print(f"Parent directory writable: {os.access(parent, os.W_OK)}")
                     pass
                 return json_output
             except Exception as ex:
