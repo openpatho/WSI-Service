@@ -66,7 +66,7 @@ async def get_authorization_header(authorization: Optional[str] = Header(None)):
 
 def add_routes_slides(app, settings, slide_manager):
     @app.get("/slides/info", response_model=SlideInfo, tags=["Main Routes"])
-    async def _(slide_id=IdQuery, plugin: str = PluginQuery, payload=api_integration.global_depends()):
+    async def _(slide_id=IdQuery, plugin: str = PluginQuery, payload: Optional[str] = Depends(get_authorization_header)):
         """
         Get metadata information for a slide given its ID
         """
@@ -345,7 +345,7 @@ def add_routes_slides(app, settings, slide_manager):
         return make_response(slide, image_tile, image_format, image_quality, image_channels)
 
     @app.get("/slides/download", tags=["Main Routes"])
-    async def _(slide_id=IdQuery, plugin: str = PluginQuery, payload=api_integration.global_depends()):
+    async def _(slide_id=IdQuery, plugin: str = PluginQuery, payload: Optional[str] = Depends(get_authorization_header)):
         """
         Download raw slide data as zip
         """
@@ -371,20 +371,26 @@ def add_routes_slides(app, settings, slide_manager):
     # NEW API ALLOWING BATCH ACCESS
     ##
     @app.get("/files/info", response_model=List[SlideInfo], tags=["Main Routes"])
-    async def info(paths: str = IdListQuery, plugin: str = PluginQuery, payload=api_integration.global_depends()):
+    async def info(paths: str = IdListQuery, plugin: str = PluginQuery, payload: Optional[str] = Depends(get_authorization_header)):
         """
         Get metadata information for a slide set (see description above sister function)
         """
+        print("in new info code")
         slide_ids = paths.split(",")
+        print("made list")
         requests = map(lambda sid: slide_manager.get_slide_info(sid, slide_info_model=SlideInfo, plugin=plugin),
                        slide_ids)
+        print("made requests")
         slide_list = await asyncio.gather(*requests)
+        print("gather 1")
         requests = [api_integration.allow_access_slide(calling_function="/batch/info",auth_payload=payload, slide_id=slide.id, manager=slide_manager,
                                                        plugin=plugin, slide=slide) for slide in slide_list]
+        print("auth complete")
         await asyncio.gather(*requests)
+        print("gather 2")
 
         _ = [log_slide_access(slide) for slide in slide_ids]
-        
+        print("logging complete")
         return slide_list
         
 
@@ -600,8 +606,9 @@ def add_routes_slides(app, settings, slide_manager):
     # OLD ENDPOINTS FOR BACKWARDS COMPATIBILITY #
     #############################################
     @app.get("/batch/info", response_model=List[SlideInfo], tags=["Main Routes"])
-    async def _(slides: str = SlideListQuery, plugin: str = PluginQuery, payload=api_integration.global_depends()):
-        return await info(slides, plugin, payload)
+    async def _(slides: str = SlideListQuery, plugin: str = PluginQuery, payload: Optional[str] = Depends(get_authorization_header)):
+        slidesStr = str(slides)
+        return await info(slidesStr, plugin, payload)
     @app.get(
         "/batch/thumbnail/max_size/{max_x}/{max_y}",
         responses=ImageResponses,
@@ -617,7 +624,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         return await thumbnail(slides, max_x, max_y, image_format, image_quality, plugin, payload)
     @app.get(
@@ -633,7 +640,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         return await label(slides, max_x, max_y, image_format, image_quality, plugin, payload)
     @app.get(
@@ -649,7 +656,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         return await macro(slides, max_x, max_y, image_format, image_quality, plugin, payload)
     @app.get(
@@ -669,7 +676,7 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         return await tile(slides, level, tile_x, tile_y, image_channels, z, padding_color, image_format, image_quality, plugin, payload)
     @app.get(
@@ -689,6 +696,6 @@ def add_routes_slides(app, settings, slide_manager):
             image_format: str = ImageFormatsQuery,
             image_quality: int = ImageQualityQuery,
             plugin: str = PluginQuery,
-            payload=api_integration.global_depends(),
+            payload: Optional[str] = Depends(get_authorization_header),
     ):
         return await batch(slides, levels, xs, ys, image_channels, z, padding_color, image_format, image_quality, plugin, payload)
