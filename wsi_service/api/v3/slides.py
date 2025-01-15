@@ -375,14 +375,10 @@ def add_routes_slides(app, settings, slide_manager):
         """
         Get metadata information for a slide set (see description above sister function)
         """
-        print("in new info code")
         slide_ids = paths.split(",")
-        print("made list")
         requests = map(lambda sid: slide_manager.get_slide_info(sid, slide_info_model=SlideInfo, plugin=plugin),
                        slide_ids)
-        print("made requests")
         slide_list = await asyncio.gather(*requests)
-        print("after gather 1")
         try:
             requests = [api_integration.allow_access_slide(calling_function="/batch/info",auth_payload=payload, slide_id=slide, manager=slide_manager,
                                                        plugin=plugin, slide=slide) for slide in slide_ids]
@@ -390,12 +386,9 @@ def add_routes_slides(app, settings, slide_manager):
             print(f"Auth Failed: {e}")
             raise e
 
-        print("auth complete")
         await asyncio.gather(*requests)
-        print("gather 2")
-
+        
         _ = [log_slide_access(slide) for slide in slide_ids]
-        print("logging complete")
         return slide_list
         
 

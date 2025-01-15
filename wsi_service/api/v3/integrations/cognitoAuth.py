@@ -40,7 +40,6 @@ class cognitoAuth(Default):
         
     async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None , calling_function=None):
         # Extract the token from the payload
-        print("inside cognito auth")
         try:
             token = None
         
