@@ -50,8 +50,8 @@ def add_routes_annotations(app, settings, slide_manager):
         
         print("Getting filename")
         fileNames = await slide_manager.get_slide_file_paths(slide_id)
-        anoPath = Path(fileNames[0]).with_suffix(".json")
-
+        anoPath = Path(fileNames[0]).with_suffix(".anotations.json")
+        
         print("Temporarily over-riding the cache")
         skip_cache = True
         
