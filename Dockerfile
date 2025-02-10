@@ -81,9 +81,11 @@ RUN apt-get update \
   && apt-get install --no-install-recommends -y python3 python3-pip python3-packaging \
   && rm -rf /var/lib/apt/lists/*
 
-RUN adduser --disabled-password --gecos '' appuser \
+RUN adduser --disabled-password --gecos '' --uid 1001 appuser \
   && mkdir /artifacts && chown appuser:appuser /artifacts \
   && mkdir -p /opt/app/bin && chown appuser:appuser /opt/app/bin
+
+RUN groupmod -g 1001 appuser
 
 # TODO move openslide build elsewhere to avoid expensive task last
 RUN apt-get update && apt-get install --no-install-recommends -y \
