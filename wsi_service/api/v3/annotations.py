@@ -69,9 +69,13 @@ def add_routes_annotations(app, settings, slide_manager):
                     response = await client.post(f"{settings.annotation_api}",json={"slide_id":slide_id,"auth_token":payload})  
                     #print(f"Response status was: {response.status_code}")
                     #print(f"Response text was a {type(response.json())}")
-                    if response.json() is not None:
-                        print(f"Text was {len(response.text)} long, parsed response Json was a {type(response.json())}, {len(response.json())} in 'length'")
-                    json_output = response.text  # Parse the JSON output
+                    if response.status_code == 200:
+                        if response.json() is not None:
+                            print(f"Text was {len(response.text)} long, parsed response Json was a {type(response.json())}, {len(response.json())} in 'length'")
+                        json_output = response.text  # Parse the JSON output
+                    else:
+                        json_output = {}
+                        print(f"Anotations API returned a {response.status_code} status and message: {response.text}")
             
                 try:
                     with open(str(anoPath), "w") as file:
