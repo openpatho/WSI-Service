@@ -29,6 +29,13 @@ class cognitoAuth(Default):
         self.cognito_user_pool_id = settings.cognito_user_pool_id  # Add this to settings
         self.aws_region = settings.aws_region  # Add this to settings
         self.jwks_url = settings.jwks_url
+        
+        self.prod_idp_url = settings.prod_idp_url
+        self.prod_client_id = settings.prod_client_id
+        self.prod_cognito_user_pool_id = settings.prod_cognito_user_pool_id  # Add this to settings
+        self.prod_aws_region = settings.prod_aws_region  # Add this to settings
+        self.prod_jwks_url = settings.prod_jwks_url
+
 
     @staticmethod
     def global_depends():
@@ -40,6 +47,7 @@ class cognitoAuth(Default):
         
     async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None , calling_function=None):
         # Extract the token from the payload
+        print("In Cognito Allow Slide Access")
         try:
             token = None
         
@@ -78,9 +86,9 @@ class cognitoAuth(Default):
         # Token not cached, Validate it against AWS Cognito
         try:
             decoded_token = self.validate_cognito_token(token)
-            valid = decoded_token.get("client_id") == self.client_id
-            
-        
+            valid_dev = decoded_token.get("client_id") == self.client_id
+            valid_prod = decoded_token.get("client_id") == self.prod_client_id
+            valid = valid_dev or valid_prod
             # Store in cache (cache both valid and invalid results)
             await cache.set(token, valid, ttl=3000)  # cache result for 50 minutes
     
@@ -90,6 +98,7 @@ class cognitoAuth(Default):
                     detail="Invalid token",
                     headers={"WWW-Authenticate": "Bearer"},
                 )
+            print("leaving cognito auth py - valid token")
             return True
 
 
@@ -108,19 +117,26 @@ class cognitoAuth(Default):
                                 headers={"WWW-Authenticate": "Bearer"},
                             )
 
+      
     def validate_cognito_token(self, token):
+        # amended to validate against a list of different jwks servers
         headers = jwt.get_unverified_header(token)
         kid = headers["kid"]
     
-       
-        response = requests.get(self.jwks_url)
-        keys = response.json()["keys"]
-    
-        # Find the key that matches the kid in the JWT header
-        key = next(k for k in keys if k["kid"] == kid)
-    
-        # Use the key to validate the token (you can use PyJWT or any other library here)
-        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
-        decoded_token = jwt.decode(token, public_key, algorithms=["RS256"],options={"verify_exp": True})
-    
-        return decoded_token
+        for jwks_url in [self.jwks_url, self.prod_jwks_url]:
+            try:
+                response = requests.get(jwks_url)
+                keys = response.json()["keys"]
+            
+                # Find the key that matches the kid in the JWT header
+                key = next(k for k in keys if k["kid"] == kid)
+            
+                # Use the key to validate the token (you can use PyJWT or any other library here)
+                public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
+                decoded_token = jwt.decode(token, public_key, algorithms=["RS256"],options={"verify_exp": True})
+            
+                return decoded_token
+            except Exception as e:
+                continue  # Try the next JWKS URL
+        
+        raise DecodeError("Token could not be validated against any known Cognito JWKS URL.")

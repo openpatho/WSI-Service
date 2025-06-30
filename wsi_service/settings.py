@@ -42,6 +42,13 @@ class Settings(BaseSettings):
     client_id: str = ""
     jwks_url: str = ""
 
+    # Prod Cognito Specific Settings:
+    prod_cognito_user_pool_id: str = ""
+    prod_aws_region: str = ""
+    prod_idp_url: str = ""
+    prod_client_id: str = ""
+    prod_jwks_url: str = ""
+
     # Anotations Endpoint Settings:
     annotation_api: str = ""
 
