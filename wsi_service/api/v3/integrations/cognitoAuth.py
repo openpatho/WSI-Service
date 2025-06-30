@@ -81,6 +81,7 @@ class cognitoAuth(Default):
                     detail="Invalid token (cached)",
                     headers={"WWW-Authenticate": "Bearer"},
                 )
+            print("leaving cognito - cached valid/true token")
             return True
     
         # Token not cached, Validate it against AWS Cognito
