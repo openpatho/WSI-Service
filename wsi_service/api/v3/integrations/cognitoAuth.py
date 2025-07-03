@@ -73,7 +73,7 @@ class cognitoAuth(Default):
         # Token extracted, let's start testing it
 
         # Check if token is cached
-        valid = await cache.get(token)
+        (valid, systemName) = await cache.get(token)
         if valid is not None:
             if not valid:
                 raise HTTPException(
@@ -82,16 +82,16 @@ class cognitoAuth(Default):
                     headers={"WWW-Authenticate": "Bearer"},
                 )
             print("leaving cognito - cached valid/true token")
-            return True
+            return True, systemName
     
         # Token not cached, Validate it against AWS Cognito
         try:
-            decoded_token = self.validate_cognito_token(token)
+            decoded_token, systemName = self.validate_cognito_token(token)
             valid_dev = decoded_token.get("client_id") == self.client_id
             valid_prod = decoded_token.get("client_id") == self.prod_client_id
             valid = valid_dev or valid_prod
             # Store in cache (cache both valid and invalid results)
-            await cache.set(token, valid, ttl=3000)  # cache result for 50 minutes
+            await cache.set(token, (valid, systemName) , ttl=3000)  # cache result for 50 minutes
     
             if not valid:
                 raise HTTPException(
@@ -100,7 +100,7 @@ class cognitoAuth(Default):
                     headers={"WWW-Authenticate": "Bearer"},
                 )
             print("leaving cognito auth py - valid token")
-            return True
+            return True, systemName
 
 
         except (DecodeError, ExpiredSignatureError) as e:
@@ -123,10 +123,15 @@ class cognitoAuth(Default):
         # amended to validate against a list of different jwks servers
         headers = jwt.get_unverified_header(token)
         kid = headers["kid"]
+
+        jwks_list = [
+                     {"system":"prod","url":self.prod_jwks_url},
+                     {"system":"dev","url":self.jwks_url}
+                    ]
     
-        for jwks_url in [self.jwks_url, self.prod_jwks_url]:
+        for jwks_dict in jwks_list:
             try:
-                response = requests.get(jwks_url)
+                response = requests.get(jwks_dict["url"])
                 keys = response.json()["keys"]
             
                 # Find the key that matches the kid in the JWT header
@@ -136,7 +141,7 @@ class cognitoAuth(Default):
                 public_key = jwt.algorithms.RSAAlgorithm.from_jwk(key)
                 decoded_token = jwt.decode(token, public_key, algorithms=["RS256"],options={"verify_exp": True})
             
-                return decoded_token
+                return decoded_token, jwks_dict["system"]
             except Exception as e:
                 continue  # Try the next JWKS URL
         
