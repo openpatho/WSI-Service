@@ -47,6 +47,7 @@ class cognitoAuth(Default):
         
     async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None , calling_function=None):
         # Extract the token from the payload
+        print(f"Overall Debug mode set to: {os.getenv('DEBUG')}")
         print("In Cognito Allow Slide Access")
         try:
             token = None
@@ -59,22 +60,24 @@ class cognitoAuth(Default):
                                 detail="No token provided",
                                 headers={"WWW-Authenticate": "Bearer"},
                             )
-        
+        print("Finding token")
         for testtoken in tokens:
             if len(testtoken) > 20: # ignores anything too short in the token string
                 token = testtoken
+        
         if not token:
-            
+            print("no token")
             raise HTTPException(
                                 status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="No token provided",
                                 headers={"WWW-Authenticate": "Bearer"},
                             )
         # Token extracted, let's start testing it
-
+        print("checking cache")
         # Check if token is cached
-        (valid, systemName) = await cache.get(token)
-        if valid is not None:
+        cached_value = await cache.get(token)
+        if cached_value is not None:
+            valid, systemName = cached_value
             if not valid:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -83,13 +86,15 @@ class cognitoAuth(Default):
                 )
             print("leaving cognito - cached valid/true token")
             return True, systemName
-    
+        print("not cached, validating")
         # Token not cached, Validate it against AWS Cognito
         try:
             decoded_token, systemName = self.validate_cognito_token(token)
+            print("decoded")
             valid_dev = decoded_token.get("client_id") == self.client_id
             valid_prod = decoded_token.get("client_id") == self.prod_client_id
             valid = valid_dev or valid_prod
+            print(f"token is valid: {valid}, storing in cache")
             # Store in cache (cache both valid and invalid results)
             await cache.set(token, (valid, systemName) , ttl=3000)  # cache result for 50 minutes
     
