@@ -35,7 +35,7 @@ class cognitoAuth(Default):
         self.prod_cognito_user_pool_id = settings.prod_cognito_user_pool_id  # Add this to settings
         self.prod_aws_region = settings.prod_aws_region  # Add this to settings
         self.prod_jwks_url = settings.prod_jwks_url
-
+        self.debug = settings.debug
 
     @staticmethod
     def global_depends():
@@ -47,8 +47,8 @@ class cognitoAuth(Default):
         
     async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None , calling_function=None):
         # Extract the token from the payload
-        print(f"Overall Debug mode set to: {os.getenv('DEBUG')}")
-        print("In Cognito Allow Slide Access")
+        #print(f"Overall Debug mode set to: {self.debug}")
+        if self.debug: print("In Cognito Allow Slide Access")
         try:
             token = None
         
@@ -60,7 +60,7 @@ class cognitoAuth(Default):
                                 detail="No token provided",
                                 headers={"WWW-Authenticate": "Bearer"},
                             )
-        print("Finding token")
+        if self.debug: print("Finding token")
         for testtoken in tokens:
             if len(testtoken) > 20: # ignores anything too short in the token string
                 token = testtoken
@@ -73,7 +73,7 @@ class cognitoAuth(Default):
                                 headers={"WWW-Authenticate": "Bearer"},
                             )
         # Token extracted, let's start testing it
-        print("checking cache")
+        if self.debug: print("checking cache")
         # Check if token is cached
         cached_value = await cache.get(token)
         if cached_value is not None:
@@ -84,17 +84,17 @@ class cognitoAuth(Default):
                     detail="Invalid token (cached)",
                     headers={"WWW-Authenticate": "Bearer"},
                 )
-            print("leaving cognito - cached valid/true token")
+            if self.debug: print("leaving cognito - cached valid/true token")
             return True, systemName
-        print("not cached, validating")
+        if self.debug: print("not cached, validating")
         # Token not cached, Validate it against AWS Cognito
         try:
             decoded_token, systemName = self.validate_cognito_token(token)
-            print("decoded")
+            if self.debug: print("decoded")
             valid_dev = decoded_token.get("client_id") == self.client_id
             valid_prod = decoded_token.get("client_id") == self.prod_client_id
             valid = valid_dev or valid_prod
-            print(f"token is valid: {valid}, storing in cache")
+            if self.debug: print(f"token is valid: {valid}, storing in cache")
             # Store in cache (cache both valid and invalid results)
             await cache.set(token, (valid, systemName) , ttl=3000)  # cache result for 50 minutes
     
@@ -104,7 +104,7 @@ class cognitoAuth(Default):
                     detail="Invalid token",
                     headers={"WWW-Authenticate": "Bearer"},
                 )
-            print("leaving cognito auth py - valid token")
+            if self.debug: print("leaving cognito auth py - valid token")
             return True, systemName
 
 
