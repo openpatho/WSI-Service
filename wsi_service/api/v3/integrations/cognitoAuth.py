@@ -48,7 +48,8 @@ class cognitoAuth(Default):
     async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None , calling_function=None):
         # Extract the token from the payload
         #print(f"Overall Debug mode set to: {self.debug}")
-        if self.debug: print("In Cognito Allow Slide Access")
+        #if self.debug: 
+        print(f"In Cognito Allow Slide Access - calling function was: {calling_function}")
         try:
             token = None
         
@@ -99,6 +100,7 @@ class cognitoAuth(Default):
             await cache.set(token, (valid, systemName) , ttl=3000)  # cache result for 50 minutes
     
             if not valid:
+                print("Not Valid against either prod or dev")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid token",
@@ -110,6 +112,8 @@ class cognitoAuth(Default):
 
         except (DecodeError, ExpiredSignatureError) as e:
             await cache.set(token, False, ttl=3000)  # cache result for 50 minutes - it's definately invalid
+            print("Either DecodeError, ExpiredSignatureError")
+            print(f"Error: {e}")
             raise HTTPException(
                                 status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="Invalid token provided",
@@ -117,6 +121,7 @@ class cognitoAuth(Default):
                             )
         except (BotoCoreError, ClientError) as e:
             # don't cache this, as it might be a connection error or similar
+            print("Either BotoCoreError, ClientError")
             raise HTTPException(
                                 status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="Invalid token provided",
