@@ -48,8 +48,7 @@ class cognitoAuth(Default):
     async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None , calling_function=None):
         # Extract the token from the payload
         #print(f"Overall Debug mode set to: {self.debug}")
-        #if self.debug: 
-        print(f"In Cognito Allow Slide Access - calling function was: {calling_function}")
+        if self.debug: print(f"In Cognito Allow Slide Access - calling function was: {calling_function}")
         try:
             token = None
         

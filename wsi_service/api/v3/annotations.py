@@ -48,7 +48,7 @@ def add_routes_annotations(app, settings, slide_manager):
         #print("Getting Slide")
         #slide = await slide_manager.get_slide_info(slide_id, slide_info_model=SlideInfo, plugin=plugin)
         
-        print("Getting filename")
+        print("Getting Anotation filename to check if it exists")
         fileNames = await slide_manager.get_slide_file_paths(slide_id)
         anoPath = Path(fileNames[0]).with_suffix(".anotations.json")
         
@@ -61,7 +61,7 @@ def add_routes_annotations(app, settings, slide_manager):
                 data = f.read()
             return data
         else:
-            print("Getting Anotations from anotations api")
+            print(f"Getting Anotations from anotations api - (cache file present: {anoPath.exists()})")
             try:
                 async with httpx.AsyncClient(timeout=60.0) as client:
                     #print("Inside With - contacting:")
