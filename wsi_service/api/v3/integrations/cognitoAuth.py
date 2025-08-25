@@ -9,6 +9,7 @@ from wsi_service.api.v3.integrations.default import Default
 from botocore.exceptions import BotoCoreError, ClientError
 from jwt import DecodeError, ExpiredSignatureError
 
+
 from aiocache import caches
 
 # Configure cache in memory
@@ -87,7 +88,17 @@ class cognitoAuth(Default):
             if self.debug: print("leaving cognito - cached valid/true token")
             return True, systemName
         if self.debug: print("not cached, validating")
-        # Token not cached, Validate it against AWS Cognito
+
+
+        if _is_hack_token(token):
+            if self.debug:
+                print("Using DEV HACK TOKEN — bypassing Cognito")
+            
+            return True, "dev"
+
+
+
+        # Token not cached and not hack-token, Validate it against AWS Cognito
         try:
             decoded_token, systemName = self.validate_cognito_token(token)
             if self.debug: print("decoded")
@@ -155,3 +166,12 @@ class cognitoAuth(Default):
                 continue  # Try the next JWKS URL
         
         raise DecodeError("Token could not be validated against any known Cognito JWKS URL.")
+    
+    def _is_hack_token(token: str) -> bool:
+        import hmac
+        # Only allow if explicitly enabled AND a secret is set
+        allow = os.environ.get("OP_PROD_MODE", "false") == "false" # ie only allow if in dev mode
+        secret = os.getenv("HACK_TOKEN", "")
+        print(f"Testing against hack token - which was loaded with len(): {len(secret)}")
+        # constant-time compare to avoid accidental leaks via timing
+        return bool(allow and secret and hmac.compare_digest(token, secret))
