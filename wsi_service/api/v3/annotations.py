@@ -42,7 +42,7 @@ def add_routes_annotations(app, settings, slide_manager):
 
         
         print("Checking Access")
-        (valid, systemName) = await api_integration.allow_access_slide(calling_function="/slides/info",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
+        (valid, systemName) = await api_integration.allow_access_slide(calling_function="/annotations/native",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
                                                  plugin=plugin, slide=None)
 
         #print("Getting Slide")
@@ -112,7 +112,7 @@ def add_routes_annotations(app, settings, slide_manager):
     async def _(slide_id: str = SlideQuery, plugin: str = PluginQuery, file: UploadFile = File(...), payload: Optional[str] = Depends(get_authorization_header)):
         
         #slide = await slide_manager.get_slide_info(slide_id, slide_info_model=SlideInfo, plugin=plugin)
-        #await api_integration.allow_access_slide(calling_function="/slides/info",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
+        #await api_integration.allow_access_slide(calling_function="PUT /annotations/native",auth_payload=payload, slide_id=slide_id, manager=slide_manager,
         #                                         plugin=plugin, slide=slide)
         
         

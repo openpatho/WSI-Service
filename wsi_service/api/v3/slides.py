@@ -375,20 +375,24 @@ def add_routes_slides(app, settings, slide_manager):
         """
         Get metadata information for a slide set (see description above sister function)
         """
+        print("In the newer `info` code")
         slide_ids = paths.split(",")
+        print(f"slide_ids are: {slide_ids}")
         requests = map(lambda sid: slide_manager.get_slide_info(sid, slide_info_model=SlideInfo, plugin=plugin),
                        slide_ids)
         slide_list = await asyncio.gather(*requests)
+        print("run map & gather")
         try:
-            requests = [api_integration.allow_access_slide(calling_function="/batch/info",auth_payload=payload, slide_id=slide, manager=slide_manager,
+            requests = [api_integration.allow_access_slide(calling_function="/files/info",auth_payload=payload, slide_id=slide, manager=slide_manager,
                                                        plugin=plugin, slide=slide) for slide in slide_ids]
         except Exception as e:
             print(f"Auth Failed: {e}")
             raise e
 
         await asyncio.gather(*requests)
-        
+        print("finished the auth and gather")
         _ = [log_slide_access(slide) for slide in slide_ids]
+        print("finished logging access")
         return slide_list
         
 
@@ -605,8 +609,10 @@ def add_routes_slides(app, settings, slide_manager):
     #############################################
     @app.get("/batch/info", response_model=List[SlideInfo], tags=["Main Routes"])
     async def _(slides: str = SlideListQuery, plugin: str = PluginQuery, payload: Optional[str] = Depends(get_authorization_header)):
+        print("In the batch/info translation")
         slidesStr = str(slides)
         return await info(slidesStr, plugin, payload)
+    
     @app.get(
         "/batch/thumbnail/max_size/{max_x}/{max_y}",
         responses=ImageResponses,

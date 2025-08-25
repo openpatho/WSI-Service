@@ -69,6 +69,7 @@ class SlideManager:
             # enable raw download if filepath exists on disk
             if os.path.exists(slide.filepath):
                 slide_info.raw_download = True
+        logger.debug("successfully returning from get_slide_info")    
         return slide_info
 
     async def get_slide_file_paths(self, slide_id):

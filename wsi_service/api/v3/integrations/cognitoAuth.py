@@ -30,6 +30,7 @@ class cognitoAuth(Default):
         self.cognito_user_pool_id = settings.cognito_user_pool_id  # Add this to settings
         self.aws_region = settings.aws_region  # Add this to settings
         self.jwks_url = settings.jwks_url
+        self.hack_token = settings.hack_token
         
         self.prod_idp_url = settings.prod_idp_url
         self.prod_client_id = settings.prod_client_id
@@ -45,6 +46,16 @@ class cognitoAuth(Default):
             # You can process the 'authorization' header here if needed
             return authorization
         return Depends(dependency)
+    
+    def _is_hack_token(self, token: str) -> bool:
+        import hmac
+        # Only allow if explicitly enabled AND a secret is set
+        allow = os.environ.get("OP_PROD_MODE", "false") == "false" # ie only allow if in dev mode
+        secret = self.hack_token
+        print(f"Testing Secret, len() {len(token)} against hack token - len(): {len(secret)}")
+       
+        # constant-time compare to avoid accidental leaks via timing
+        return bool(allow and secret and hmac.compare_digest(token, secret))
         
     async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None , calling_function=None):
         # Extract the token from the payload
@@ -78,8 +89,10 @@ class cognitoAuth(Default):
         # Check if token is cached
         cached_value = await cache.get(token)
         if cached_value is not None:
+            if self.debug: print("Using cached auth/reject value")
             valid, systemName = cached_value
             if not valid:
+                print("cache said it wasn't valid")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid token (cached)",
@@ -90,13 +103,13 @@ class cognitoAuth(Default):
         if self.debug: print("not cached, validating")
 
 
-        if _is_hack_token(token):
+        if self._is_hack_token(token):
             if self.debug:
                 print("Using DEV HACK TOKEN — bypassing Cognito")
-            
+            await cache.set(token, (True, "dev") , ttl=3000)
             return True, "dev"
 
-
+        if self.debug: print("Not a match with the `hack token` - continuing")
 
         # Token not cached and not hack-token, Validate it against AWS Cognito
         try:
@@ -167,11 +180,4 @@ class cognitoAuth(Default):
         
         raise DecodeError("Token could not be validated against any known Cognito JWKS URL.")
     
-    def _is_hack_token(token: str) -> bool:
-        import hmac
-        # Only allow if explicitly enabled AND a secret is set
-        allow = os.environ.get("OP_PROD_MODE", "false") == "false" # ie only allow if in dev mode
-        secret = os.getenv("HACK_TOKEN", "")
-        print(f"Testing against hack token - which was loaded with len(): {len(secret)}")
-        # constant-time compare to avoid accidental leaks via timing
-        return bool(allow and secret and hmac.compare_digest(token, secret))
+    

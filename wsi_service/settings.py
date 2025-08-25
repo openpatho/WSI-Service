@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     idp_url: str = ""
     client_id: str = ""
     jwks_url: str = ""
+    hack_token: str = ""
 
     # Prod Cognito Specific Settings:
     prod_cognito_user_pool_id: str = ""
