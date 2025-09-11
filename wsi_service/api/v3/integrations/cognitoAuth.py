@@ -176,6 +176,7 @@ class cognitoAuth(Default):
             
                 return decoded_token, jwks_dict["system"]
             except Exception as e:
+                print(f"did not validate against {jwks_dict['system']} (url={jwks_dict['url']}) result: {e}")
                 continue  # Try the next JWKS URL
         
         raise DecodeError("Token could not be validated against any known Cognito JWKS URL.")
