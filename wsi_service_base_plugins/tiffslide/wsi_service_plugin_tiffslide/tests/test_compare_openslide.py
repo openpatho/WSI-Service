@@ -11,9 +11,13 @@ from wsi_service.tests.integration.plugin_example_tests.helpers import get_image
     [("8d32dba05a4558218880f06caf30d3ac"), ("f5f3a03b77fb5e0497b95eaff84e9a21")],
 )
 def test_compare_openslide_info(slide_id):
-    response = requests.get(f"http://localhost:8080/v3/slides/{slide_id}/info?plugin=tiffslide")
+    response = requests.get(
+        f"http://localhost:8080/v3/slides/{slide_id}/info?plugin=tiffslide"
+    )
     slide_info_tiffslide = SlideInfo.model_validate(response.json())
-    response = requests.get(f"http://localhost:8080/v3/slides/{slide_id}/info?plugin=openslide")
+    response = requests.get(
+        f"http://localhost:8080/v3/slides/{slide_id}/info?plugin=openslide"
+    )
     slide_info_openslide = SlideInfo.model_validate(response.json())
     slide_info_tiffslide.format = ""
     slide_info_openslide.format = ""
@@ -44,7 +48,9 @@ def test_compare_openslide_tile(slide_id, tiles):
         # tile_openslide_pil.save(f"{slide_id}_{level}_{x}_{y}_openslide.png")
         tile_openslide = np.array(tile_openslide_pil).astype(np.float64)
         mean_relative_error = np.mean(
-            np.abs(tile_tiffslide[tile_openslide > 0] - tile_openslide[tile_openslide > 0])
+            np.abs(
+                tile_tiffslide[tile_openslide > 0] - tile_openslide[tile_openslide > 0]
+            )
             / tile_openslide[tile_openslide > 0]
         )
         # print(slide_id, level, x, y, mean_relative_error)
@@ -55,7 +61,10 @@ def test_compare_openslide_tile(slide_id, tiles):
 @pytest.mark.parametrize(
     "slide_id, regions",
     [
-        ("8d32dba05a4558218880f06caf30d3ac", [(0, 16000, 24000), (1, 4000, 6000), (2, 1000, 1500), (2, -200, -100)]),
+        (
+            "8d32dba05a4558218880f06caf30d3ac",
+            [(0, 16000, 24000), (1, 4000, 6000), (2, 1000, 1500), (2, -200, -100)],
+        ),
         (
             "f5f3a03b77fb5e0497b95eaff84e9a21",
             [
@@ -87,7 +96,9 @@ def test_compare_openslide_region(slide_id, regions):
         # tile_openslide_pil.save(f"{slide_id}_{level}_{x}_{y}_openslide.png")
         tile_openslide = np.array(tile_openslide_pil).astype(np.float64)
         mean_relative_error = np.mean(
-            np.abs(tile_tiffslide[tile_openslide > 0] - tile_openslide[tile_openslide > 0])
+            np.abs(
+                tile_tiffslide[tile_openslide > 0] - tile_openslide[tile_openslide > 0]
+            )
             / tile_openslide[tile_openslide > 0]
         )
         # print(slide_id, level, x, y, mean_relative_error)

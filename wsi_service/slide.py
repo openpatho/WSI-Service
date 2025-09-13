@@ -27,7 +27,9 @@ class Slide(object):
         # allowed to return pil image or numpy array
         raise NotImplementedError
 
-    async def get_region(self, level, start_x, start_y, size_x, size_y, padding_color=None, z=0):
+    async def get_region(
+        self, level, start_x, start_y, size_x, size_y, padding_color=None, z=0
+    ):
         # allowed to return pil image or numpy array
         raise NotImplementedError
 

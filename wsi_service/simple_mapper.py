@@ -6,7 +6,10 @@ from uuid import NAMESPACE_URL, uuid5
 from fastapi import HTTPException
 from filelock import FileLock
 
-from wsi_service.custom_models.local_mapper_models import CaseLocalMapper, SlideLocalMapper
+from wsi_service.custom_models.local_mapper_models import (
+    CaseLocalMapper,
+    SlideLocalMapper,
+)
 from wsi_service.custom_models.old_v3.storage import SlideStorage, StorageAddress
 from wsi_service.plugins import is_supported_format
 
@@ -20,36 +23,40 @@ class SimpleMapper:
         self.refresh(force_refresh=False)
 
     def refresh(self, force_refresh=True):
-        #ic("refreshing mapper")
+        # ic("refreshing mapper")
         with FileLock("local_mapper.lock"):
-            #ic("inside lock")
+            # ic("inside lock")
             data_dir_changed = self._get_data_dir_changed()
-            #ic(force_refresh,data_dir_changed,os.path.exists('local_mapper.p'))
-            if force_refresh or data_dir_changed or not os.path.exists("local_mapper.p"):
-                #ic("Starting directory Scan")
+            # ic(force_refresh,data_dir_changed,os.path.exists('local_mapper.p'))
+            if (
+                force_refresh
+                or data_dir_changed
+                or not os.path.exists("local_mapper.p")
+            ):
+                # ic("Starting directory Scan")
                 self._initialize_with_path(self.data_dir)
                 data = {}
                 data["data_dir"] = self.data_dir
                 data["case_map"] = self.case_map
                 data["slide_map"] = self.slide_map
-                #ic(data)
+                # ic(data)
                 with open("local_mapper.p", "wb") as f:
                     pickle.dump(data, f)
-        
+
         self.load()
 
     def load(self):
-        #ic("load called")
+        # ic("load called")
         updated_hash = self._get_updated_hash()
-        
+
         if self.hash != updated_hash:
-            #ic("Starting load")
+            # ic("Starting load")
             with FileLock("local_mapper.lock"):
                 with open("local_mapper.p", "rb") as f:
                     data = pickle.load(f)
                     self.case_map = data["case_map"]
                     self.slide_map = data["slide_map"]
-                    #ic(data)
+                    # ic(data)
                 self.hash = self._get_updated_hash()
 
     def _get_updated_hash(self):
@@ -69,7 +76,9 @@ class SimpleMapper:
         try:
             self._collect_all_folders_as_cases(data_dir)
         except FileNotFoundError as e:
-            raise HTTPException(status_code=404, detail=f"No such directory: {data_dir}") from e
+            raise HTTPException(
+                status_code=404, detail=f"No such directory: {data_dir}"
+            ) from e
         for case_id, case in self.case_map.items():
             case_dir = os.path.join(data_dir, case.local_id)
             self._collect_all_files_as_slides(data_dir, case_id, case_dir)
@@ -79,7 +88,9 @@ class SimpleMapper:
             absdir = os.path.join(data_dir, sub_data_dir)
             if os.path.isdir(absdir):
                 case_id = uuid5(NAMESPACE_URL, sub_data_dir).hex
-                self.case_map[case_id] = CaseLocalMapper(id=case_id, local_id=sub_data_dir, slides=[])
+                self.case_map[case_id] = CaseLocalMapper(
+                    id=case_id, local_id=sub_data_dir, slides=[]
+                )
 
     def _collect_all_files_as_slides(self, data_dir, case_id, case_dir):
         local_case_id = self.case_map[case_id].local_id
@@ -114,7 +125,9 @@ class SimpleMapper:
     def get_slides(self, case_id):
         self.load()
         if case_id not in self.case_map:
-            raise HTTPException(status_code=404, detail=f"Case with case_id {case_id} does not exist")
+            raise HTTPException(
+                status_code=404, detail=f"Case with case_id {case_id} does not exist"
+            )
         slide_data = []
         for slide_id in sorted(self.case_map[case_id].slides):
             slide_data.append(self.slide_map[slide_id])
@@ -124,5 +137,8 @@ class SimpleMapper:
         if slide_id not in self.slide_map:
             self.refresh()
             if slide_id not in self.slide_map:
-                raise HTTPException(status_code=404, detail=f"Slide with slide_id {slide_id} does not exist")
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Slide with slide_id {slide_id} does not exist",
+                )
         return self.slide_map[slide_id]

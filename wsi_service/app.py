@@ -10,15 +10,13 @@ from wsi_service.singletons import settings
 from wsi_service.slide_manager import SlideManager
 
 
-
-
 try:
     from wsi_service.utils.cloudwrappers.redis_openpatho import RedisLogger
 except:
     from utils.cloudwrappers.redis_openpatho import RedisLogger
 
 
-redislogger = RedisLogger() 
+redislogger = RedisLogger()
 
 openapi_url = "/openapi.json"
 if settings.disable_openapi:
@@ -37,7 +35,8 @@ async def lifespan(app: FastAPI):
     yield
     slide_manager.close()
 
-docsUrl = "/docs" if not settings.prod_mode else None 
+
+docsUrl = "/docs" if not settings.prod_mode else None
 
 app = FastAPI(
     title=settings.title,
@@ -48,14 +47,16 @@ app = FastAPI(
     openapi_url="/openapi.json" if not settings.disable_openapi else "",
     root_path=settings.root_path,
     lifespan=lifespan,
-    debug=settings.debug
+    debug=settings.debug,
 )
 
 add_routes_root(app, settings)
 
-app_v3 = FastAPI(openapi_url=openapi_url,
+app_v3 = FastAPI(
+    openapi_url=openapi_url,
     docs_url=docsUrl,
-    redoc_url=None,)
+    redoc_url=None,
+)
 
 if settings.cors_allow_origins:
     for app_obj in [app, app_v3]:
@@ -73,13 +74,15 @@ app.mount("/v3", app_v3)
 
 
 def log_api_call(log_entry):
-    #pass
+    # pass
     redislogger.add_health_log(log_entry)
 
+
 def get_last_api_calls(service_name):
-    #pass
+    # pass
     return redislogger.get_last_activity_time(service_name)
-        
+
+
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     method = request.method
@@ -96,11 +99,11 @@ async def log_requests(request: Request, call_next):
 
     # Create the log entry
     log_entry = {
-        "service name":"wsi_service",
+        "service name": "wsi_service",
         "method": method,
         "path": path,
         "query_params": query_params,
-        "body": body
+        "body": body,
     }
 
     # Log the API call to the pickle file
@@ -108,11 +111,12 @@ async def log_requests(request: Request, call_next):
 
     # Proceed with the request
     response = await call_next(request)
-    
+
     # Add 30 minute Cache-Control header
     response.headers["Cache-Control"] = "private, max-age=1800"
-    
+
     return response
+
 
 @app.get("/health")
 async def health_check():

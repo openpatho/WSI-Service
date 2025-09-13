@@ -36,7 +36,9 @@ class SlideManager:
         exp_slide = self.slide_cache.get_item(cache_id)
         if exp_slide is None:
             main_storage_address = await self._get_slide_main_storage_address(slide_id)
-            storage_address = os.path.join(self.data_dir, main_storage_address["address"])
+            storage_address = os.path.join(
+                self.data_dir, main_storage_address["address"]
+            )
             logger.debug("Storage address for slide %s: %s", slide_id, storage_address)
 
             async with self.storage_locks[cache_id]:
@@ -46,7 +48,9 @@ class SlideManager:
                 if removed_item:
                     removed_item[1].timer.cancel()
                     await removed_item[1].slide.close()
-                logger.debug("New slide handle opened for storage address: %s", storage_address)
+                logger.debug(
+                    "New slide handle opened for storage address: %s", storage_address
+                )
 
         self._reset_slide_expiration(cache_id, exp_slide)
 
@@ -63,13 +67,15 @@ class SlideManager:
         # overwrite dummy id with actual slide id
         slide_info.id = slide_id
         # slide info conversion
-        slide_info = self._convert_slide_info_to_match_slide_info_model(slide_info, slide_info_model)
+        slide_info = self._convert_slide_info_to_match_slide_info_model(
+            slide_info, slide_info_model
+        )
         if isinstance(slide_info, SlideInfoV3):
             self._extend_slide_format_identifier(slide, slide_info)
             # enable raw download if filepath exists on disk
             if os.path.exists(slide.filepath):
                 slide_info.raw_download = True
-        logger.debug("successfully returning from get_slide_info")    
+        logger.debug("successfully returning from get_slide_info")
         return slide_info
 
     async def get_slide_file_paths(self, slide_id):
@@ -89,8 +95,12 @@ class SlideManager:
     def _reset_slide_expiration(self, cache_id, expiring_slide):
         if expiring_slide.timer is not None:
             expiring_slide.timer.cancel()
-        expiring_slide.timer = self.event_loop.call_later(self.timeout, self._sync_close_slide, cache_id)
-        logger.debug("Set expiration timer for storage address (%s): %s", cache_id, self.timeout)
+        expiring_slide.timer = self.event_loop.call_later(
+            self.timeout, self._sync_close_slide, cache_id
+        )
+        logger.debug(
+            "Set expiration timer for storage address (%s): %s", cache_id, self.timeout
+        )
 
     async def _get_slide_storage_addresses(self, slide_id):
         slide = None
@@ -98,21 +108,26 @@ class SlideManager:
             slide = self.local_mapper.get_slide(slide_id)
             if not slide:
                 raise HTTPException(
-                    status_code=404, detail=f"Could not find a storage address for slide id {slide_id}."
+                    status_code=404,
+                    detail=f"Could not find a storage address for slide id {slide_id}.",
                 )
             slide = slide.slide_storage.model_dump()
         else:
             try:
                 async with aiohttp.ClientSession() as session:
-                    async with session.get(self.mapper_address.format(slide_id=slide_id)) as r:
+                    async with session.get(
+                        self.mapper_address.format(slide_id=slide_id)
+                    ) as r:
                         if r.status == 404:
                             raise HTTPException(
-                                status_code=404, detail=f"Could not find a storage address for slide id {slide_id}."
+                                status_code=404,
+                                detail=f"Could not find a storage address for slide id {slide_id}.",
                             )
                         slide = await r.json()
             except aiohttp.ClientConnectorError:
                 raise HTTPException(
-                    status_code=503, detail="WSI Service is unable to connect to the Storage Mapper Service."
+                    status_code=503,
+                    detail="WSI Service is unable to connect to the Storage Mapper Service.",
                 )
         return slide["storage_addresses"]
 
@@ -133,7 +148,9 @@ class SlideManager:
             await exp_slide.slide.close()
             logger.debug("Closed slide with storage address: %s", cache_id)
 
-    def _convert_slide_info_to_match_slide_info_model(self, slide_info, slide_info_model):
+    def _convert_slide_info_to_match_slide_info_model(
+        self, slide_info, slide_info_model
+    ):
         # V1 not supported: left for reference
         # if issubclass(slide_info_model, SlideInfoV1):
         #     if isinstance(slide_info, SlideInfoV3):
@@ -158,7 +175,12 @@ class SlideManager:
             slide_info.format = ""
         if "file" not in slide_info.format and "folder" not in slide_info.format:
             if os.path.isfile(slide.filepath):
-                slide_info.format = "file-" + pathlib.Path(slide.filepath).suffix.lstrip(".") + "-" + slide_info.format
+                slide_info.format = (
+                    "file-"
+                    + pathlib.Path(slide.filepath).suffix.lstrip(".")
+                    + "-"
+                    + slide_info.format
+                )
             elif os.path.isdir(slide.filepath):
                 slide_info.format = "folder-" + slide_info.format
         if slide.plugin not in slide_info.format:

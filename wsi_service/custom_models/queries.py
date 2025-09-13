@@ -8,7 +8,8 @@ IdQuery = Query(
 )
 
 ImageFormatsQuery = Query(
-    "jpeg", description="Image format (e.g. bmp, gif, jpeg, png, tiff). For raw image data choose tiff."
+    "jpeg",
+    description="Image format (e.g. bmp, gif, jpeg, png, tiff). For raw image data choose tiff.",
 )
 
 ImageQualityQuery = Query(
@@ -20,7 +21,10 @@ ImageQualityQuery = Query(
     Set to 0 to compress lossy with 'jpeg')""",
 )
 
-ImageChannelQuery = Query(None, description="List of requested image channels. By default all channels are returned.")
+ImageChannelQuery = Query(
+    None,
+    description="List of requested image channels. By default all channels are returned.",
+)
 
 ImagePaddingColorQuery = Query(
     None,

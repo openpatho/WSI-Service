@@ -55,13 +55,20 @@ class Settings(BaseSettings):
 
     # prod mode to disable docs & enable auth
     prod_mode: bool = False
-    
+
     # default color for padding of image regions out of image extent
     padding_color: tuple = (255, 255, 255)
 
-    model_config = SettingsConfigDict(env_file=[".env","cog.env"], env_file_encoding="utf-8", env_prefix="ws_", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=[".env", "cog.env"],
+        env_file_encoding="utf-8",
+        env_prefix="ws_",
+        extra="ignore",
+    )
 
     if prod_mode:
         disable_openapi = True
         if not client_id or not cognito_user_pool_id:
-            raise ValueError("In production mode, authentication must be enabled. Please configure client_id and cognito_user_pool_id.")
+            raise ValueError(
+                "In production mode, authentication must be enabled. Please configure client_id and cognito_user_pool_id."
+            )

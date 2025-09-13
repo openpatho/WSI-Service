@@ -14,11 +14,9 @@ class PathsMapper:
     def __init__(self, data_dir):
         self.data_dir = data_dir
 
-    def refresh(self, force_refresh=True):
-        ...
+    def refresh(self, force_refresh=True): ...
 
-    def load(self):
-        ...
+    def load(self): ...
 
     def get_cases(self):
         # cases not supported, only direct access
@@ -29,10 +27,12 @@ class PathsMapper:
         return []
 
     def get_slide(self, slide_id):
-        slide_id = slide_id.replace('>', '/')
+        slide_id = slide_id.replace(">", "/")
         absfile = os.path.join(self.data_dir, slide_id)
         if not is_supported_format(absfile):
-            raise HTTPException(status_code=404, detail=f"Slide {slide_id} does not exist")
+            raise HTTPException(
+                status_code=404, detail=f"Slide {slide_id} does not exist"
+            )
 
         return SlideLocalMapper(
             id=slide_id,
@@ -48,5 +48,5 @@ class PathsMapper:
                         slide_id=slide_id,
                     )
                 ],
-            )
+            ),
         )

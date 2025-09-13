@@ -10,7 +10,16 @@ def is_supported(filepath):
         suffix = pathlib.Path(filepath).suffix
         if filename.endswith("ome.tif") or filename.endswith("ome.tiff"):
             return False
-        return suffix in [".bif", ".mrxs", ".ndpi", ".scn", ".svs", ".tiff", ".tif", ".czi"]
+        return suffix in [
+            ".bif",
+            ".mrxs",
+            ".ndpi",
+            ".scn",
+            ".svs",
+            ".tiff",
+            ".tif",
+            ".czi",
+        ]
     # VSF is not supported
     # else:
     #     return any(list(pathlib.Path(filepath).glob("*.vsf")))

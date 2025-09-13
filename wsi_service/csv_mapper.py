@@ -8,13 +8,17 @@ from fastapi import HTTPException
 from filelock import FileLock
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from wsi_service.custom_models.local_mapper_models import CaseLocalMapper, SlideLocalMapper
+from wsi_service.custom_models.local_mapper_models import (
+    CaseLocalMapper,
+    SlideLocalMapper,
+)
 from wsi_service.custom_models.old_v3.storage import SlideStorage, StorageAddress
 from wsi_service.singletons import logger
 
+
 class CSVMapperSettings(BaseSettings):
-    source: str = 'data.csv'
-    separator: str = '\t'
+    source: str = "data.csv"
+    separator: str = "\t"
     group_1: int = 0
     group_2: int = 1
     slide_id: int = 2
@@ -70,7 +74,9 @@ def create_slide_object(settings, case, row):
     slide_local_id = row[settings.slide_id]
     type = "w"
 
-    local_id = case.group_1 + "." + case.group_2 + "." + type + "." + str(slide_local_id)
+    local_id = (
+        case.group_1 + "." + case.group_2 + "." + type + "." + str(slide_local_id)
+    )
 
     slide = IteratedSlideLocalMapper(
         id=local_id,
@@ -120,12 +126,18 @@ class CSVMapper:
     def refresh(self, force_refresh=True):
         with FileLock("local_mapper.lock"):
             data_dir_changed = self._get_data_dir_changed()
-            if force_refresh or data_dir_changed or not os.path.exists("local_mapper.p"):
+            if (
+                force_refresh
+                or data_dir_changed
+                or not os.path.exists("local_mapper.p")
+            ):
                 data = {}
                 try:
                     self._read_csv_data()
                 except Exception as e:
-                    raise HTTPException(500, "Failed to parse the CSV file! Is your syntax correct?") from e
+                    raise HTTPException(
+                        500, "Failed to parse the CSV file! Is your syntax correct?"
+                    ) from e
 
                 data["data_dir"] = self.data_dir
                 data["case_map"] = self.case_map
@@ -148,7 +160,7 @@ class CSVMapper:
         settings = self.settings
         case_map = {}
         slide_map = {}
-        with open(path, 'r') as file:
+        with open(path, "r") as file:
             reader = csv.reader(file, delimiter=settings.separator)
             for data in reader:
                 case_id = data[settings.case_id]
@@ -172,7 +184,7 @@ class CSVMapper:
             the_error = None
             for root, dirs, files in os.walk(path):
                 for file in files:
-                    if file.endswith('.csv') or file.endswith('.tsv'):
+                    if file.endswith(".csv") or file.endswith(".tsv"):
                         try:
                             file_path = os.path.join(root, file)
                             self._read_csv_file(file_path)
@@ -180,8 +192,12 @@ class CSVMapper:
                         except Exception as e:
                             the_error = e
             if not found_data and the_error is not None:
-                logger.error(f"Directory {path} does not contain a valid data definition .tsv or .csv files!")
-                raise HTTPException(status_code=500, detail=f"Invalid CSV source data!") from the_error
+                logger.error(
+                    f"Directory {path} does not contain a valid data definition .tsv or .csv files!"
+                )
+                raise HTTPException(
+                    status_code=500, detail=f"Invalid CSV source data!"
+                ) from the_error
             elif not found_data:
                 logger.info(f"Directory {path} does not contain any data.")
 
@@ -189,7 +205,10 @@ class CSVMapper:
             try:
                 self._read_csv_file(path)
             except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Target CSV data definition is not a valid file!") from e
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Target CSV data definition is not a valid file!",
+                ) from e
 
         else:
             logger.error(f"Path {path} is neither a file nor a directory.")
@@ -213,7 +232,9 @@ class CSVMapper:
     def get_slides(self, case_id):
         self.load()
         if case_id not in self.case_map:
-            raise HTTPException(status_code=404, detail=f"Case with case_id {case_id} does not exist")
+            raise HTTPException(
+                status_code=404, detail=f"Case with case_id {case_id} does not exist"
+            )
         slide_data = []
         for slide_id in sorted(self.case_map[case_id].slides):
             slide_data.append(self.slide_map[slide_id])
@@ -223,5 +244,8 @@ class CSVMapper:
         if slide_id not in self.slide_map:
             self.load()
             if slide_id not in self.slide_map:
-                raise HTTPException(status_code=404, detail=f"Slide with slide_id {slide_id} does not exist")
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Slide with slide_id {slide_id} does not exist",
+                )
         return self.slide_map[slide_id]

@@ -14,14 +14,17 @@ class StorageAddress(RestrictedBaseModel):
         examples=["path/to/file"],
         description="Storage address, e.g. filepath, URL, that can be accessed by the WSI Service",
     )
-    slide_id: str = Field(examples=["a7981525-a465-4240-8da5-e2defae6a746"], description="Slide ID")
+    slide_id: str = Field(
+        examples=["a7981525-a465-4240-8da5-e2defae6a746"], description="Slide ID"
+    )
     main_address: bool = Field(
         examples=[True],
         description="""Boolean indicating if this entry is the main address for access.
         There can only be one main address per Slide""",
     )
     storage_address_id: str = Field(
-        examples=["a30b2bd7-1160-43a1-8583-8cf39d552471"], description="Unique Storage Address ID"
+        examples=["a30b2bd7-1160-43a1-8583-8cf39d552471"],
+        description="Unique Storage Address ID",
     )
 
     __hash__ = object.__hash__
@@ -34,8 +37,12 @@ class SlideStorage(RestrictedBaseModel):
     The storage addresses could, for example, include a number of filepaths pointing the user to all
     files needed to actually open the slide."""
 
-    slide_id: str = Field(examples=["a7981525-a465-4240-8da5-e2defae6a746"], description="Slide ID")
-    storage_type: str = Field(examples=["fs"], description="Storage type, e.g. fs for filesystem")
+    slide_id: str = Field(
+        examples=["a7981525-a465-4240-8da5-e2defae6a746"], description="Slide ID"
+    )
+    storage_type: str = Field(
+        examples=["fs"], description="Storage type, e.g. fs for filesystem"
+    )
     storage_addresses: List[StorageAddress] = Field(
         examples=[
             [
@@ -57,7 +64,9 @@ class SlideStorage(RestrictedBaseModel):
         # check matching slide ids
         for storage_address in value:
             if storage_address.slide_id != info.data["slide_id"]:
-                raise ValueError("Slide ID defined by a storage address does not match overall slide ID")
+                raise ValueError(
+                    "Slide ID defined by a storage address does not match overall slide ID"
+                )
         # check only one main address
         main_address_count = 0
         for storage_address in value:
@@ -66,4 +75,3 @@ class SlideStorage(RestrictedBaseModel):
         if main_address_count > 1:
             raise ValueError("Only one storage address can be the main address")
         return value
-

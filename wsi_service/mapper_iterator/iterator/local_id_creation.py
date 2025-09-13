@@ -1,7 +1,10 @@
 import os
 import re
 import uuid
-from wsi_service.custom_models.local_mapper_models import CaseLocalMapper, SlideLocalMapper
+from wsi_service.custom_models.local_mapper_models import (
+    CaseLocalMapper,
+    SlideLocalMapper,
+)
 from wsi_service.models.v3.storage import SlideStorage, StorageAddress
 
 
@@ -19,6 +22,7 @@ class IteratedSlideLocalMapper(SlideLocalMapper):
     project: str
     context_id: str
     to_import: bool
+
 
 def create_case_object(settings, source_path):
     context_id = os.path.basename(source_path)
@@ -38,7 +42,7 @@ def create_case_object(settings, source_path):
             project = project_patterns.group(1)
             assert len(project) <= 5
 
-    print('CASE', source_path)
+    print("CASE", source_path)
     namespace = uuid.uuid5(uuid.NAMESPACE_DNS, path)
     local_id = institution + "." + project + "." + type + "." + str(namespace)
     case = IteratedCaseLocalMapper(
@@ -60,9 +64,11 @@ def create_slide_object(file_path, case):
     slide_local_id = uuid.uuid5(case.namespace, file_path)
     type = "w"
 
-    local_id = case.institution + "." + case.project + "." + type + "." + str(slide_local_id)
+    local_id = (
+        case.institution + "." + case.project + "." + type + "." + str(slide_local_id)
+    )
 
-    print('   >SLIDE', file_name)
+    print("   >SLIDE", file_name)
 
     slide = IteratedSlideLocalMapper(
         id=local_id,

@@ -29,7 +29,8 @@ def make_oauth2_wrapper(auth: Auth, auth_settings: AuthSettings):
     oauth2_scheme = OAuth2(
         flows=OAuthFlows(
             authorizationCode=OAuthFlowAuthorizationCode(
-                tokenUrl=auth_settings.openapi_token_url, authorizationUrl=auth_settings.openapi_auth_url
+                tokenUrl=auth_settings.openapi_token_url,
+                authorizationUrl=auth_settings.openapi_auth_url,
             )
         )
     )
@@ -58,11 +59,15 @@ class EmpaiaApiIntegration:
             logger=self.logger,
             rewrite_url_in_wellknown=self.auth_settings.rewrite_url_in_wellknown,
         )
-        self.oauth2_wrapper = make_oauth2_wrapper(auth=self.auth, auth_settings=self.auth_settings)
+        self.oauth2_wrapper = make_oauth2_wrapper(
+            auth=self.auth, auth_settings=self.auth_settings
+        )
 
     def global_depends(self):
         return Depends(self.oauth2_wrapper)
 
-    async def allow_access_slide(self, auth_payload, slide_id, manager, plugin, slide=None, calling_function=None):
+    async def allow_access_slide(
+        self, auth_payload, slide_id, manager, plugin, slide=None, calling_function=None
+    ):
         print("in empaiia")
         ...

@@ -21,7 +21,10 @@ from wsi_service.tests.unit.test_client import get_client_and_slide_manager
         ("/v3/slides/14b5c5dab96b540bba23b08429592bcf/thumbnail/max_size/1/1", 200),
         ("/v3/slides/14b5c5dab96b540bba23b08429592bcf/label/max_size/1/1", 404),
         ("/v3/slides/14b5c5dab96b540bba23b08429592bcf/macro/max_size/1/1", 404),
-        ("/v3/slides/14b5c5dab96b540bba23b08429592bcf/region/level/0/start/0/0/size/1/1", 200),
+        (
+            "/v3/slides/14b5c5dab96b540bba23b08429592bcf/region/level/0/start/0/0/size/1/1",
+            200,
+        ),
         ("/v3/slides/14b5c5dab96b540bba23b08429592bcf/tile/level/0/tile/0/0", 200),
     ],
 )

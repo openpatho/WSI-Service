@@ -16,7 +16,9 @@ auth_settings = None
 if settings.idp_url:
     try:
         auth_settings = AuthSettings(
-            idp_url=settings.idp_url, client_id=settings.client_id, client_secret=settings.client_secret
+            idp_url=settings.idp_url,
+            client_id=settings.client_id,
+            client_secret=settings.client_secret,
         )
     except ValidationError as e:
         logger.info(f"Auth not configured: {e}")

@@ -12,7 +12,9 @@ def get_zipfly_paths(filenames):
 
 def get_parent_folder(filenames):
     parent_path = os.path.dirname(filenames[0])
-    while any([(parent_path not in os.path.dirname(filename)) for filename in filenames]):
+    while any(
+        [(parent_path not in os.path.dirname(filename)) for filename in filenames]
+    ):
         parent_path = os.path.dirname(parent_path)
     return parent_path + "/"
 

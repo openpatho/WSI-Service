@@ -37,7 +37,9 @@ def test_masks(aioresponses, slide_id, address, plugin):
     # get region
     size_x = info["extent"]["x"]
     size_y = info["extent"]["y"]
-    r = client.get(f"/v3/slides/{slide_id}/region/level/0/start/0/0/size/{size_x}/{size_y}?plugin={plugin}")
+    r = client.get(
+        f"/v3/slides/{slide_id}/region/level/0/start/0/0/size/{size_x}/{size_y}?plugin={plugin}"
+    )
     assert r.status_code == 200
     image = Image.open(r)
     assert image.mode == "RGB"

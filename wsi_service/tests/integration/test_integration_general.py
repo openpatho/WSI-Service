@@ -28,26 +28,45 @@ def test_get_cases_valid():
 
 
 def test_get_available_slides_valid():
-    response = requests.get("http://localhost:8080/cases/4593f30c39d75d2385c6c8811c4ae7e0/slides/")
+    response = requests.get(
+        "http://localhost:8080/cases/4593f30c39d75d2385c6c8811c4ae7e0/slides/"
+    )
     assert response.status_code == 200
     slides = response.json()
     slide = list(
-        filter(lambda slide: slide["slide_storage"]["storage_addresses"][0]["address"].endswith("CMU-1.svs"), slides)
+        filter(
+            lambda slide: slide["slide_storage"]["storage_addresses"][0][
+                "address"
+            ].endswith("CMU-1.svs"),
+            slides,
+        )
     )[0]
-    assert len(slides) >= 1  # valid if there is more than one slide ending with CMU-1.svs
+    assert (
+        len(slides) >= 1
+    )  # valid if there is more than one slide ending with CMU-1.svs
     assert len(slides[0].keys()) == 3
     assert slide["id"] == "8d32dba05a4558218880f06caf30d3ac"
     assert slide["local_id"] == "CMU-1.svs"
     assert slide["slide_storage"]["slide_id"] == "8d32dba05a4558218880f06caf30d3ac"
     assert slide["slide_storage"]["storage_type"] == "fs"
     assert slide["slide_storage"]["storage_addresses"][0]["main_address"] is True
-    assert slide["slide_storage"]["storage_addresses"][0]["storage_address_id"] == "8d32dba05a4558218880f06caf30d3ac"
-    assert slide["slide_storage"]["storage_addresses"][0]["address"].endswith("Aperio/CMU-1.svs")
-    assert slide["slide_storage"]["storage_addresses"][0]["slide_id"] == "8d32dba05a4558218880f06caf30d3ac"
+    assert (
+        slide["slide_storage"]["storage_addresses"][0]["storage_address_id"]
+        == "8d32dba05a4558218880f06caf30d3ac"
+    )
+    assert slide["slide_storage"]["storage_addresses"][0]["address"].endswith(
+        "Aperio/CMU-1.svs"
+    )
+    assert (
+        slide["slide_storage"]["storage_addresses"][0]["slide_id"]
+        == "8d32dba05a4558218880f06caf30d3ac"
+    )
 
 
 def test_get_slide_valid():
-    response = requests.get("http://localhost:8080/slides/f5f3a03b77fb5e0497b95eaff84e9a21")
+    response = requests.get(
+        "http://localhost:8080/slides/f5f3a03b77fb5e0497b95eaff84e9a21"
+    )
     assert response.status_code == 200
     slide = response.json()
     assert len(slide.keys()) == 3
@@ -56,9 +75,17 @@ def test_get_slide_valid():
     assert slide["slide_storage"]["slide_id"] == "f5f3a03b77fb5e0497b95eaff84e9a21"
     assert slide["slide_storage"]["storage_type"] == "fs"
     assert slide["slide_storage"]["storage_addresses"][0]["main_address"] is True
-    assert slide["slide_storage"]["storage_addresses"][0]["storage_address_id"] == "f5f3a03b77fb5e0497b95eaff84e9a21"
-    assert slide["slide_storage"]["storage_addresses"][0]["address"].endswith("Generic TIFF/CMU-1.tiff")
-    assert slide["slide_storage"]["storage_addresses"][0]["slide_id"] == "f5f3a03b77fb5e0497b95eaff84e9a21"
+    assert (
+        slide["slide_storage"]["storage_addresses"][0]["storage_address_id"]
+        == "f5f3a03b77fb5e0497b95eaff84e9a21"
+    )
+    assert slide["slide_storage"]["storage_addresses"][0]["address"].endswith(
+        "Generic TIFF/CMU-1.tiff"
+    )
+    assert (
+        slide["slide_storage"]["storage_addresses"][0]["slide_id"]
+        == "f5f3a03b77fb5e0497b95eaff84e9a21"
+    )
 
 
 def test_get_available_slides_invalid_case_id():
@@ -75,8 +102,12 @@ def test_get_slide_invalid_slide_id():
 
 @pytest.mark.parametrize("api_version", ["v3"])
 @pytest.mark.parametrize("slide_id", ["f5f3a03b77fb5e0497b95eaff84e9a21"])
-@pytest.mark.parametrize("tile_x, tile_y, level, expected_response, size", [(0, 0, 9, 200, (128, 128))])  # ok
-def test_get_slide_tile_padding_color(api_version, slide_id, tile_x, tile_y, level, expected_response, size):
+@pytest.mark.parametrize(
+    "tile_x, tile_y, level, expected_response, size", [(0, 0, 9, 200, (128, 128))]
+)  # ok
+def test_get_slide_tile_padding_color(
+    api_version, slide_id, tile_x, tile_y, level, expected_response, size
+):
     response = requests.get(
         (
             f"http://localhost:8080/{api_version}/slides/{slide_id}/tile/level/{level}/tile/{tile_x}/{tile_y}"
@@ -105,7 +136,9 @@ def test_get_slide_tile_padding_color(api_version, slide_id, tile_x, tile_y, lev
         (10, 16, 422),  # level fails
     ],
 )
-def test_get_slide_tile_invalid(api_version, slide_id, tile_x, level, expected_response):
+def test_get_slide_tile_invalid(
+    api_version, slide_id, tile_x, level, expected_response
+):
     response = requests.get(
         f"http://localhost:8080/{api_version}/slides/{slide_id}/tile/level/{level}/tile/{tile_x}/{tile_x}"
     )
@@ -121,9 +154,12 @@ def test_get_slide_tile_invalid(api_version, slide_id, tile_x, level, expected_r
         (1_000_000, 1_000_000, 0, 200, 255),
     ],
 )
-def test_get_slide_tile_out_of_image(api_version, slide_id, tile_x, tile_y, level, expected_response, expected_mean):
+def test_get_slide_tile_out_of_image(
+    api_version, slide_id, tile_x, tile_y, level, expected_response, expected_mean
+):
     response = requests.get(
-        f"http://localhost:8080/{api_version}/slides/{slide_id}/tile/level/{level}/tile/{tile_x}/{tile_y}", stream=True
+        f"http://localhost:8080/{api_version}/slides/{slide_id}/tile/level/{level}/tile/{tile_x}/{tile_y}",
+        stream=True,
     )
     assert response.status_code == expected_response
     image = get_image(response)
@@ -140,7 +176,15 @@ def test_get_slide_tile_out_of_image(api_version, slide_id, tile_x, tile_y, leve
     ],
 )
 def test_get_slide_region_out_of_image(
-    api_version, slide_id, start_x, start_y, size_x, size_y, level, expected_response, expected_mean
+    api_version,
+    slide_id,
+    start_x,
+    start_y,
+    size_x,
+    size_y,
+    level,
+    expected_response,
+    expected_mean,
 ):
     response = requests.get(
         f"http://localhost:8080/{api_version}/slides/{slide_id}/region/level/{level}/start/{start_x}/{start_y}/size/{size_x}/{size_y}",
@@ -226,7 +270,9 @@ def test_download(api_version, slide_id, file_count, file_size):
     def download_file(url, download_folder):
         with requests.get(url, stream=True) as r:
             r.raise_for_status()
-            filename = r.headers["content-disposition"].replace("attachment;filename=", "")
+            filename = r.headers["content-disposition"].replace(
+                "attachment;filename=", ""
+            )
             file_path = os.path.join(download_folder, filename)
             with open(file_path, "wb") as f:
                 for chunk in r.iter_content(chunk_size=1_000_000):
@@ -256,7 +302,9 @@ def test_download(api_version, slide_id, file_count, file_size):
     # create temp dir
     tmp_dir = tempfile.mkdtemp()
     # download
-    file_path = download_file(f"http://localhost:8080/{api_version}/slides/{slide_id}/download", tmp_dir)
+    file_path = download_file(
+        f"http://localhost:8080/{api_version}/slides/{slide_id}/download", tmp_dir
+    )
     assert os.path.exists(file_path)
     assert slide_id in file_path
     # unzip

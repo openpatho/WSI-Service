@@ -1,13 +1,26 @@
 import requests
 
 from wsi_service.models.v3.slide import SlideInfo
-from wsi_service.tests.integration.plugin_example_tests.helpers import get_image, get_tiff_image
+from wsi_service.tests.integration.plugin_example_tests.helpers import (
+    get_image,
+    get_tiff_image,
+)
 
 
 def check_get_slide_info_valid(
-    slide_id, channels, channel_depth, num_levels, pixel_size_nm, tile_size, x, y, plugin=""
+    slide_id,
+    channels,
+    channel_depth,
+    num_levels,
+    pixel_size_nm,
+    tile_size,
+    x,
+    y,
+    plugin="",
 ):
-    response = requests.get(f"http://localhost:8080/v3/slides/{slide_id}/info?plugin={plugin}")
+    response = requests.get(
+        f"http://localhost:8080/v3/slides/{slide_id}/info?plugin={plugin}"
+    )
     assert response.status_code == 200
     slide_info = SlideInfo.model_validate(response.json())
     assert slide_info.id == slide_id
@@ -56,10 +69,20 @@ def check_get_slide_thumbnail_valid(
         x, y = image.size
         assert (x == max_size_x) or (y == max_size_y)
         if image_format == "png":
-            assert image.getpixel((pixel_location[0], pixel_location[1])) == testpixel_rgb
+            assert (
+                image.getpixel((pixel_location[0], pixel_location[1])) == testpixel_rgb
+            )
 
 
-def check_get_slide_label_valid(image_format, image_quality, slide_id, has_label, pixel_location, testpixel, plugin=""):
+def check_get_slide_label_valid(
+    image_format,
+    image_quality,
+    slide_id,
+    has_label,
+    pixel_location,
+    testpixel,
+    plugin="",
+):
     max_x, max_y = 200, 200
     response = requests.get(
         (
@@ -80,13 +103,21 @@ def check_get_slide_label_valid(image_format, image_quality, slide_id, has_label
         else:
             image = get_image(response)
             if image_format == "png":
-                assert image.getpixel((pixel_location[0], pixel_location[1])) == testpixel
+                assert (
+                    image.getpixel((pixel_location[0], pixel_location[1])) == testpixel
+                )
     else:
         assert response.status_code == 404
 
 
 def check_get_slide_macro_valid(
-    image_format, image_quality, slide_id, return_value, pixel_location, testpixel, plugin=""
+    image_format,
+    image_quality,
+    slide_id,
+    return_value,
+    pixel_location,
+    testpixel,
+    plugin="",
 ):
     max_x, max_y = 200, 200
     response = requests.get(
@@ -108,11 +139,21 @@ def check_get_slide_macro_valid(
         else:
             image = get_image(response)
             if image_format == "png":
-                assert image.getpixel((pixel_location[0], pixel_location[1])) == testpixel
+                assert (
+                    image.getpixel((pixel_location[0], pixel_location[1])) == testpixel
+                )
 
 
 def check_get_slide_region_valid_brightfield(
-    image_format, image_quality, slide_id, pixel_location, testpixel, start_x, start_y, size, plugin=""
+    image_format,
+    image_quality,
+    slide_id,
+    pixel_location,
+    testpixel,
+    start_x,
+    start_y,
+    size,
+    plugin="",
 ):
     level = 0
     size_x = size
@@ -181,7 +222,9 @@ def check_get_slide_region_valid_fluorescence(
         x, y = image.size
         assert (x == size[0]) or (y == size[1])
         if image_format in ["png", "bmp"]:
-            assert image.getpixel((pixel_location[0], pixel_location[1])) == testpixel_rgb
+            assert (
+                image.getpixel((pixel_location[0], pixel_location[1])) == testpixel_rgb
+            )
 
 
 def check_get_slide_region_dedicated_channel(
@@ -221,10 +264,14 @@ def check_get_slide_region_dedicated_channel(
         x, y = image.size
         assert (x == size[0]) or (y == size[1])
         if image_format == "png":
-            assert image.getpixel((pixel_location[0], pixel_location[1])) == testpixel_rgb
+            assert (
+                image.getpixel((pixel_location[0], pixel_location[1])) == testpixel_rgb
+            )
 
 
-def check_get_slide_region_invalid_channel(slide_id, channels, expected_response, plugin=""):
+def check_get_slide_region_invalid_channel(
+    slide_id, channels, expected_response, plugin=""
+):
     str_channels = "&".join([f"image_channels={str(ch)}" for ch in channels])
     response = requests.get(
         f"http://localhost:8080/v3/slides/{slide_id}/region/level/2/start/0/0/size/64/64?{str_channels}&plugin={plugin}",
@@ -233,7 +280,9 @@ def check_get_slide_region_invalid_channel(slide_id, channels, expected_response
     assert response.status_code == expected_response
 
 
-def check_get_slide_region_invalid(slide_id, testpixel, start_x, start_y, size, status_code, plugin=""):
+def check_get_slide_region_invalid(
+    slide_id, testpixel, start_x, start_y, size, status_code, plugin=""
+):
     level = 0
     size_x = size
     size_y = size + 198
@@ -247,7 +296,16 @@ def check_get_slide_region_invalid(slide_id, testpixel, start_x, start_y, size, 
     assert response.status_code == status_code
 
 
-def check_get_slide_tile_valid(image_format, image_quality, slide_id, testpixel, tile_x, tile_y, tile_size, plugin=""):
+def check_get_slide_tile_valid(
+    image_format,
+    image_quality,
+    slide_id,
+    testpixel,
+    tile_x,
+    tile_y,
+    tile_size,
+    plugin="",
+):
     level = 0
     response = requests.get(
         (

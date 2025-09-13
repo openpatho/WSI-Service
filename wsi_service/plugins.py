@@ -21,7 +21,10 @@ async def load_slide(filepath, plugin=None):
 
     supported_plugins = _get_supported_plugins(filepath)
     if len(supported_plugins) == 0:
-        raise HTTPException(status_code=500, detail="There is no plugin available that does support this slide.")
+        raise HTTPException(
+            status_code=500,
+            detail="There is no plugin available that does support this slide.",
+        )
 
     if plugin:
         if plugin in supported_plugins.keys():
@@ -46,7 +49,9 @@ def get_plugins_overview():
     for plugin_name, plugin in plugins.items():
         version = version_from_name("wsi_service_plugin_" + plugin_name)
         plugin_info = PluginInfo(
-            name=plugin_name, version=version, priority=_get_plugin_priority((plugin_name, plugin))
+            name=plugin_name,
+            version=version,
+            priority=_get_plugin_priority((plugin_name, plugin)),
         )
         plugins_overview.append(plugin_info)
     return plugins_overview
@@ -87,7 +92,12 @@ async def _open_slide(plugin, plugin_name, filepath):
         slide = await plugin.open(filepath)
         slide.plugin = plugin_name
     except HTTPException as e:
-        raise HTTPException(status_code=500, detail=f"Plugin {plugin_name} unable to open image ({e.detail})")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Plugin {plugin_name} unable to open image ({e.detail})",
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Plugin {plugin_name} unable to open image ({e})")
+        raise HTTPException(
+            status_code=500, detail=f"Plugin {plugin_name} unable to open image ({e})"
+        )
     return slide

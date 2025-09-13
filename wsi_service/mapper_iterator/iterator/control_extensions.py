@@ -103,7 +103,9 @@ def is_allowed_extension(extension):
     return False
 
 
-def multi_extension_control(settings, file_path, case_id, cases, slides, controlled_path):
+def multi_extension_control(
+    settings, file_path, case_id, cases, slides, controlled_path
+):
     multi_extension_control_map = {
         ".mrxs": control_mrxs,
         ".dcm": control_dcm,

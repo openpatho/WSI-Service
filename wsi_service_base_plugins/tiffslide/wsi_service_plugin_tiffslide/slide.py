@@ -32,7 +32,9 @@ class Slide(BaseSlide):
     async def get_info(self):
         return self.slide_info
 
-    async def get_region(self, level, start_x, start_y, size_x, size_y, padding_color=None, z=0):
+    async def get_region(
+        self, level, start_x, start_y, size_x, size_y, padding_color=None, z=0
+    ):
         if padding_color is None:
             padding_color = settings.padding_color
         downsample_factor = self.slide_info.levels[level].downsample_factor
@@ -40,7 +42,9 @@ class Slide(BaseSlide):
             (int)(start_x * downsample_factor),
             (int)(start_y * downsample_factor),
         )
-        level_0_location = self.__adapt_level_0_location(level_0_location, downsample_factor, start_x, start_y)
+        level_0_location = self.__adapt_level_0_location(
+            level_0_location, downsample_factor, start_x, start_y
+        )
         try:
             img = self.slide.read_region(level_0_location, level, (size_x, size_y))
         except tiffslide.TiffFileError as e:
@@ -53,7 +57,9 @@ class Slide(BaseSlide):
             try:
                 self.thumbnail = self.__get_associated_image("thumbnail")
             except HTTPException:
-                self.thumbnail = await self.__get_thumbnail(settings.max_thumbnail_size, settings.max_thumbnail_size)
+                self.thumbnail = await self.__get_thumbnail(
+                    settings.max_thumbnail_size, settings.max_thumbnail_size
+                )
         thumbnail = self.thumbnail.copy()
         thumbnail.thumbnail((max_x, max_y))
         return thumbnail
@@ -86,7 +92,10 @@ class Slide(BaseSlide):
     def __get_tif_level_for_slide_level(self, level):
         slide_level = self.slide_info.levels[level]
         for level in self.slide._tifffile.series[0].levels:
-            if level.shape[1] == slide_level.extent.x and level.shape[0] == slide_level.extent.y:
+            if (
+                level.shape[1] == slide_level.extent.x
+                and level.shape[0] == slide_level.extent.y
+            ):
                 return level
 
     def __get_associated_image(self, associated_image_name):
@@ -107,9 +116,16 @@ class Slide(BaseSlide):
         return original_levels
 
     def __get_pixel_size(self):
-        if self.slide.properties[tiffslide.PROPERTY_NAME_VENDOR] in self.supported_vendors:
-            pixel_size_nm_x = 1000.0 * float(self.slide.properties[tiffslide.PROPERTY_NAME_MPP_X])
-            pixel_size_nm_y = 1000.0 * float(self.slide.properties[tiffslide.PROPERTY_NAME_MPP_Y])
+        if (
+            self.slide.properties[tiffslide.PROPERTY_NAME_VENDOR]
+            in self.supported_vendors
+        ):
+            pixel_size_nm_x = 1000.0 * float(
+                self.slide.properties[tiffslide.PROPERTY_NAME_MPP_X]
+            )
+            pixel_size_nm_y = 1000.0 * float(
+                self.slide.properties[tiffslide.PROPERTY_NAME_MPP_Y]
+            )
         else:
             SlidePixelSizeNm()
         return SlidePixelSizeNm(x=pixel_size_nm_x, y=pixel_size_nm_y)
@@ -151,9 +167,13 @@ class Slide(BaseSlide):
             )
             return slide_info
         except HTTPException as e:
-            raise HTTPException(status_code=404, detail=f"Failed to gather slide infos. [{e.detail}]")
+            raise HTTPException(
+                status_code=404, detail=f"Failed to gather slide infos. [{e.detail}]"
+            )
         except Exception as e:
-            raise HTTPException(status_code=404, detail=f"Failed to gather slide infos. [{e}]")
+            raise HTTPException(
+                status_code=404, detail=f"Failed to gather slide infos. [{e}]"
+            )
 
     async def __get_thumbnail(self, max_x, max_y):
         level = self.__get_best_level_for_thumbnail(max_x, max_y)
@@ -209,10 +229,10 @@ class Slide(BaseSlide):
 
     def __add_jpeg_headers(self, page, data, color_transform):
         # add jpeg tables
-        pos = data.find(b"\xFF\xDA")
+        pos = data.find(b"\xff\xda")
         data[pos:pos] = page.jpegtables[2:-2]
         # check missing huffman tables
-        if data.find(b"\xFF\xC4") < 0:
+        if data.find(b"\xff\xc4") < 0:
             data[pos:pos] = self.__get_default_huffman_tables()
         # add APP14 data
         #
@@ -228,26 +248,37 @@ class Slide(BaseSlide):
         # 01 = YCbCr
         if color_transform == "YCbCr":
             color_transform_value = b"\x01"
-        data[pos:pos] = b"\xFF\xEE\x00\x0E\x41\x64\x6F\x62\x65\x00\x64\x00\x00\x00\x00" + color_transform_value
+        data[pos:pos] = (
+            b"\xff\xee\x00\x0e\x41\x64\x6f\x62\x65\x00\x64\x00\x00\x00\x00"
+            + color_transform_value
+        )
 
-    def __adapt_level_0_location(self, level_0_location, downsample_factor, start_x, start_y):
+    def __adapt_level_0_location(
+        self, level_0_location, downsample_factor, start_x, start_y
+    ):
         # adapting level_0_location to maintain better compatibility with openslide
         # check issue: https://github.com/bayer-science-for-a-better-life/tiffslide/issues/63
         tiffslide_start_x = int(level_0_location[0] / downsample_factor)
         tiffslide_start_y = int(level_0_location[1] / downsample_factor)
         if tiffslide_start_x != start_x:
             level_0_location = (
-                (int)(level_0_location[0] + abs(tiffslide_start_x - start_x) * downsample_factor),
+                (int)(
+                    level_0_location[0]
+                    + abs(tiffslide_start_x - start_x) * downsample_factor
+                ),
                 level_0_location[1],
             )
         if tiffslide_start_y != start_y:
             level_0_location = (
                 level_0_location[0],
-                (int)(level_0_location[1] + abs(tiffslide_start_y - start_y) * downsample_factor),
+                (int)(
+                    level_0_location[1]
+                    + abs(tiffslide_start_y - start_y) * downsample_factor
+                ),
             )
         return level_0_location
 
     def __get_default_huffman_tables(
         self,
     ):
-        return b"\xFF\xC4\x00\x1F\x00\x00\x01\x05\x01\x01\x01\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\xFF\xC4\x00\xB5\x10\x00\x02\x01\x03\x03\x02\x04\x03\x05\x05\x04\x04\x00\x00\x01\x7d\x01\x02\x03\x00\x04\x11\x05\x12\x21\x31\x41\x06\x13\x51\x61\x07\x22\x71\x14\x32\x81\x91\xa1\x08\x23\x42\xb1\xc1\x15\x52\xd1\xf0\x24\x33\x62\x72\x82\x09\x0a\x16\x17\x18\x19\x1a\x25\x26\x27\x28\x29\x2a\x34\x35\x36\x37\x38\x39\x3a\x43\x44\x45\x46\x47\x48\x49\x4a\x53\x54\x55\x56\x57\x58\x59\x5a\x63\x64\x65\x66\x67\x68\x69\x6a\x73\x74\x75\x76\x77\x78\x79\x7a\x83\x84\x85\x86\x87\x88\x89\x8a\x92\x93\x94\x95\x96\x97\x98\x99\x9a\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa"
+        return b"\xff\xc4\x00\x1f\x00\x00\x01\x05\x01\x01\x01\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\xff\xc4\x00\xb5\x10\x00\x02\x01\x03\x03\x02\x04\x03\x05\x05\x04\x04\x00\x00\x01\x7d\x01\x02\x03\x00\x04\x11\x05\x12\x21\x31\x41\x06\x13\x51\x61\x07\x22\x71\x14\x32\x81\x91\xa1\x08\x23\x42\xb1\xc1\x15\x52\xd1\xf0\x24\x33\x62\x72\x82\x09\x0a\x16\x17\x18\x19\x1a\x25\x26\x27\x28\x29\x2a\x34\x35\x36\x37\x38\x39\x3a\x43\x44\x45\x46\x47\x48\x49\x4a\x53\x54\x55\x56\x57\x58\x59\x5a\x63\x64\x65\x66\x67\x68\x69\x6a\x73\x74\x75\x76\x77\x78\x79\x7a\x83\x84\x85\x86\x87\x88\x89\x8a\x92\x93\x94\x95\x96\x97\x98\x99\x9a\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa"

@@ -22,7 +22,9 @@ class Slide:
         return self.slide_info
 
     def get_thumbnail(self, max_x, max_y):
-        return self._to_numpy_array(asyncio.run(self.async_slide.get_thumbnail(max_x, max_y)))
+        return self._to_numpy_array(
+            asyncio.run(self.async_slide.get_thumbnail(max_x, max_y))
+        )
 
     def get_label(self):
         return self._to_numpy_array(asyncio.run(self.async_slide.get_label()))
@@ -30,10 +32,22 @@ class Slide:
     def get_macro(self):
         return self._to_numpy_array(asyncio.run(self.async_slide.get_macro()))
 
-    def get_region(self, level, start_x, start_y, size_x, size_y, padding_color=None, z=0):
-        if check_complete_region_overlap(self.slide_info, level, start_x, start_y, size_x, size_y):
+    def get_region(
+        self, level, start_x, start_y, size_x, size_y, padding_color=None, z=0
+    ):
+        if check_complete_region_overlap(
+            self.slide_info, level, start_x, start_y, size_x, size_y
+        ):
             region = asyncio.run(
-                self.async_slide.get_region(level, start_x, start_y, size_x, size_y, padding_color=padding_color, z=z)
+                self.async_slide.get_region(
+                    level,
+                    start_x,
+                    start_y,
+                    size_x,
+                    size_y,
+                    padding_color=padding_color,
+                    z=z,
+                )
             )
         else:
             region = asyncio.run(
@@ -53,11 +67,21 @@ class Slide:
 
     def get_tile(self, level, tile_x, tile_y, padding_color=None, z=0):
         if check_complete_tile_overlap(self.slide_info, level, tile_x, tile_y):
-            tile = asyncio.run(self.async_slide.get_tile(level, tile_x, tile_y, padding_color=padding_color, z=z))
+            tile = asyncio.run(
+                self.async_slide.get_tile(
+                    level, tile_x, tile_y, padding_color=padding_color, z=z
+                )
+            )
         else:
             tile = asyncio.run(
                 get_extended_tile(
-                    self.async_slide.get_tile, self.slide_info, level, tile_x, tile_y, padding_color=padding_color, z=z
+                    self.async_slide.get_tile,
+                    self.slide_info,
+                    level,
+                    tile_x,
+                    tile_y,
+                    padding_color=padding_color,
+                    z=z,
                 )
             )
         return self._to_numpy_array(tile)

@@ -6,12 +6,16 @@ from uuid import NAMESPACE_URL, uuid5
 from fastapi import HTTPException
 from filelock import FileLock
 
-from wsi_service.custom_models.local_mapper_models import CaseLocalMapper, SlideLocalMapper
+from wsi_service.custom_models.local_mapper_models import (
+    CaseLocalMapper,
+    SlideLocalMapper,
+)
 from wsi_service.custom_models.old_v3.storage import SlideStorage, StorageAddress
 from wsi_service.plugins import is_supported_format
 
 from .iterator.settings import SettingsIterator
 from .iterator.iterator import iterate
+
 
 class IteratorMapper:
     def __init__(self, data_dir):
@@ -24,7 +28,11 @@ class IteratorMapper:
     def refresh(self, force_refresh=True):
         with FileLock("local_mapper.lock"):
             data_dir_changed = self._get_data_dir_changed()
-            if force_refresh or data_dir_changed or not os.path.exists("local_mapper.p"):
+            if (
+                force_refresh
+                or data_dir_changed
+                or not os.path.exists("local_mapper.p")
+            ):
                 settings = SettingsIterator()
                 settings.source_path = self.data_dir
                 cases, slides = iterate(settings)
@@ -66,7 +74,9 @@ class IteratorMapper:
     def get_slides(self, case_id):
         self.load()
         if case_id not in self.case_map:
-            raise HTTPException(status_code=404, detail=f"Case with case_id {case_id} does not exist")
+            raise HTTPException(
+                status_code=404, detail=f"Case with case_id {case_id} does not exist"
+            )
         slide_data = []
         for slide_id in sorted(self.case_map[case_id].slides):
             slide_data.append(self.slide_map[slide_id])
@@ -76,5 +86,8 @@ class IteratorMapper:
         if slide_id not in self.slide_map:
             self.load()
             if slide_id not in self.slide_map:
-                raise HTTPException(status_code=404, detail=f"Slide with slide_id {slide_id} does not exist")
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Slide with slide_id {slide_id} does not exist",
+                )
         return self.slide_map[slide_id]

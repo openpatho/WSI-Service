@@ -73,7 +73,10 @@ async def test_exceed_cache_limit(aioresponses):
         if slide_manager.slide_cache.maxSize > i:
             assert len(slide_manager.slide_cache.get_all()) == i + 1
         else:
-            assert len(slide_manager.slide_cache.get_all()) == slide_manager.slide_cache.maxSize
+            assert (
+                len(slide_manager.slide_cache.get_all())
+                == slide_manager.slide_cache.maxSize
+            )
             assert slide_manager.slide_cache.has_item(
                 f"/wsi-service/wsi_service/tests/unit/data/testcase/CMU-{i}-small.tiff"
             )

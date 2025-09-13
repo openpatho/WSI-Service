@@ -8,7 +8,13 @@ import pyvips
 from fastapi import HTTPException
 from skimage import transform, util
 
-from wsi_service.models.v3.slide import SlideChannel, SlideColor, SlideExtent, SlideInfo, SlidePixelSizeNm
+from wsi_service.models.v3.slide import (
+    SlideChannel,
+    SlideColor,
+    SlideExtent,
+    SlideInfo,
+    SlidePixelSizeNm,
+)
 from wsi_service.singletons import settings
 from wsi_service.slide import Slide as BaseSlide
 from wsi_service.utils.image_utils import rgba_to_rgb_with_background_color
@@ -21,20 +27,26 @@ class Slide(BaseSlide):
     async def open(self, filepath):
         self.locker = Lock()
         try:
-            self.vips_slide = pyvips.Image.new_from_file(filepath, access='sequential')
-            if self.vips_slide.get('vips-loader') != 'tiffload':
+            self.vips_slide = pyvips.Image.new_from_file(filepath, access="sequential")
+            if self.vips_slide.get("vips-loader") != "tiffload":
                 raise HTTPException(
                     status_code=500,
                     detail="Unsupported file format",
                 )
         except Exception as e:
-            raise HTTPException(status_code=404, detail=f"Failed to load tiff file. [{e}]")
+            raise HTTPException(
+                status_code=404, detail=f"Failed to load tiff file. [{e}]"
+            )
         self.slide_info = self.__get_slide_info_tiff()
         # Validate the parsed slide_info to ensure non-zero dimensions
         if self.slide_info.extent.x == 0 or self.slide_info.extent.y == 0:
-            raise HTTPException(status_code=500, detail="Parsed slide dimensions are zero.")
+            raise HTTPException(
+                status_code=500, detail="Parsed slide dimensions are zero."
+            )
         if self.slide_info.tile_extent.x == 0 or self.slide_info.tile_extent.y == 0:
-            raise HTTPException(status_code=500, detail="Parsed tile dimensions are zero.")
+            raise HTTPException(
+                status_code=500, detail="Parsed tile dimensions are zero."
+            )
 
     async def close(self):
         self.vips_slide = None
@@ -42,7 +54,9 @@ class Slide(BaseSlide):
     async def get_info(self):
         return self.slide_info
 
-    async def get_region(self, level, start_x, start_y, size_x, size_y, padding_color=None, z=0):
+    async def get_region(
+        self, level, start_x, start_y, size_x, size_y, padding_color=None, z=0
+    ):
         if padding_color is None:
             padding_color = settings.padding_color
 
@@ -50,8 +64,8 @@ class Slide(BaseSlide):
         region = vips_level.extract_area(start_x, start_y, size_x, size_y)
 
         # Ensure the image is in sRGB color space
-        if region.interpretation != 'srgb':
-            region = region.colourspace('srgb')
+        if region.interpretation != "srgb":
+            region = region.colourspace("srgb")
 
         result = np.array(region)
 
@@ -63,7 +77,9 @@ class Slide(BaseSlide):
         if result.ndim == 2:  # Grayscale image
             result = np.stack((result,) * 3, axis=-1)  # Convert grayscale to RGB
         elif result.ndim == 3 and result.shape[2] == 1:  # Single channel
-            result = np.concatenate([result] * 3, axis=2)  # Convert single channel to RGB
+            result = np.concatenate(
+                [result] * 3, axis=2
+            )  # Convert single channel to RGB
 
         return result
 
@@ -82,8 +98,12 @@ class Slide(BaseSlide):
         # thumbnail_org = self.__get_vips_level_for_slide_level(thumb_level)
         # return np.array(thumbnail_org)
 
-        thumbnail_org = await self.get_region(thumb_level, 0, 0, level_extent_x, level_extent_y, settings.padding_color)
-        thumbnail_resized = util.img_as_uint(transform.resize(thumbnail_org, (max_y, max_x, thumbnail_org.shape[2])))
+        thumbnail_org = await self.get_region(
+            thumb_level, 0, 0, level_extent_x, level_extent_y, settings.padding_color
+        )
+        thumbnail_resized = util.img_as_uint(
+            transform.resize(thumbnail_org, (max_y, max_x, thumbnail_org.shape[2]))
+        )
         return thumbnail_resized
 
     async def get_label(self):
@@ -120,7 +140,9 @@ class Slide(BaseSlide):
         return rgb_color
 
     def __get_vips_level_for_slide_level(self, level):
-        return pyvips.Image.new_from_file(self.vips_slide.filename, page=level, access='sequential')
+        return pyvips.Image.new_from_file(
+            self.vips_slide.filename, page=level, access="sequential"
+        )
 
     def __get_levels_tiff(self):
         num_levels = self.vips_slide.get("n-pages")
@@ -136,7 +158,9 @@ class Slide(BaseSlide):
             else:
                 level_downsamples.append(1)
 
-        original_levels = get_original_levels(level_count, level_dimensions, level_downsamples)
+        original_levels = get_original_levels(
+            level_count, level_dimensions, level_downsamples
+        )
         return original_levels
 
     def __get_slide_info_tiff(self):
@@ -144,22 +168,34 @@ class Slide(BaseSlide):
         levels = self.__get_levels_tiff()
 
         try:
-            tile_width = serie.get('tile-width') if 'tile-width' in serie.get_fields() else 0
-            tile_height = serie.get('tile-height') if 'tile-height' in serie.get_fields() else 0
+            tile_width = (
+                serie.get("tile-width") if "tile-width" in serie.get_fields() else 0
+            )
+            tile_height = (
+                serie.get("tile-height") if "tile-height" in serie.get_fields() else 0
+            )
 
             if tile_width == 0 or tile_height == 0:
                 tile_width, tile_height = self.__infer_tile_size(levels[0])
 
             slide_info = SlideInfo(
                 id="",
-                channels=[SlideChannel(id=0, name="Channel 0", color=SlideColor(r=255, g=255, b=255, a=255))],
+                channels=[
+                    SlideChannel(
+                        id=0,
+                        name="Channel 0",
+                        color=SlideColor(r=255, g=255, b=255, a=255),
+                    )
+                ],
                 channel_depth=8,  # Assuming 8-bit depth for simplicity
                 extent=SlideExtent(
                     x=serie.width,
                     y=serie.height,
                     z=1,
                 ),
-                pixel_size_nm=SlidePixelSizeNm(x=1, y=1),  # Assuming 1nm pixel size for simplicity
+                pixel_size_nm=SlidePixelSizeNm(
+                    x=1, y=1
+                ),  # Assuming 1nm pixel size for simplicity
                 tile_extent=SlideExtent(
                     x=tile_width,
                     y=tile_height,
@@ -171,7 +207,9 @@ class Slide(BaseSlide):
             )
             return slide_info
         except Exception as e:
-            raise HTTPException(status_code=404, detail=f"Failed to gather slide infos. [{e}]")
+            raise HTTPException(
+                status_code=404, detail=f"Failed to gather slide infos. [{e}]"
+            )
 
 
 # import asyncio

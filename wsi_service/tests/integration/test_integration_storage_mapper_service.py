@@ -37,7 +37,10 @@ def test_real_storage_mapper_with_wsi_service(api_version, slide_id):
                 }
             ],
         }
-        r = requests.post(f"http://storage-mapper-service:8000/{api_version}/slides/", data=json.dumps(slide_storage))
+        r = requests.post(
+            f"http://storage-mapper-service:8000/{api_version}/slides/",
+            data=json.dumps(slide_storage),
+        )
         assert r.status_code in [201, 409]
     r = requests.get(f"http://localhost:8080/{api_version}/slides/{slide_id}/info")
     assert r.status_code == 200

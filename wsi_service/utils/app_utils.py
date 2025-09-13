@@ -42,12 +42,19 @@ def process_image_region(slide, image_region, image_channels):
             rgb_image = convert_narray_to_pil_image(result)
             return rgb_image
         else:
-            result = get_requested_channels_as_rgb_array(image_region, image_channels, slide)
+            result = get_requested_channels_as_rgb_array(
+                image_region, image_channels, slide
+            )
             mode = "L" if len(image_channels) == 1 else "RGB"
-            rgb_image = convert_narray_to_pil_image(result, np.min(result), np.max(result), mode=mode)
+            rgb_image = convert_narray_to_pil_image(
+                result, np.min(result), np.max(result), mode=mode
+            )
             return rgb_image
     else:
-        raise HTTPException(status_code=400, detail="Failed to read region in an appropriate internal representation.")
+        raise HTTPException(
+            status_code=400,
+            detail="Failed to read region in an appropriate internal representation.",
+        )
 
 
 def process_image_region_raw(image_region, image_channels):
@@ -64,13 +71,20 @@ def process_image_region_raw(image_region, image_channels):
             result = get_requested_channels_as_array(image_region, image_channels)
             return result
     else:
-        raise HTTPException(status_code=400, detail="Failed to read region in an apropriate internal representation.")
+        raise HTTPException(
+            status_code=400,
+            detail="Failed to read region in an apropriate internal representation.",
+        )
 
 
-def make_response(slide, image_region, image_format, image_quality, image_channels=None):
+def make_response(
+    slide, image_region, image_format, image_quality, image_channels=None
+):
     if isinstance(image_region, bytes):
         if image_format == "jpeg":
-            return Response(image_region, media_type=supported_image_formats[image_format])
+            return Response(
+                image_region, media_type=supported_image_formats[image_format]
+            )
         else:
             image_region = Image.open(BytesIO(image_region))
     if image_format == "tiff":
@@ -88,7 +102,9 @@ def make_image_response(pil_image, image_format, image_quality):
         image_format = alternative_spellings[image_format]
 
     if image_format not in supported_image_formats:
-        raise HTTPException(status_code=400, detail="Provided image format parameter not supported")
+        raise HTTPException(
+            status_code=400, detail="Provided image format parameter not supported"
+        )
 
     mem = save_rgb_image(pil_image, image_format, image_quality)
     return Response(mem.getvalue(), media_type=supported_image_formats[image_format])
@@ -99,14 +115,25 @@ def make_tif_response(narray, image_format):
         image_format = alternative_spellings[image_format]
 
     if image_format not in supported_image_formats:
-        raise HTTPException(status_code=400, detail="Provided image format parameter not supported for OME tiff")
+        raise HTTPException(
+            status_code=400,
+            detail="Provided image format parameter not supported for OME tiff",
+        )
 
     mem = BytesIO()
     try:
         if narray.shape[0] == 1:
-            tifffile.imwrite(mem, narray, photometric="minisblack", compression="DEFLATE")
+            tifffile.imwrite(
+                mem, narray, photometric="minisblack", compression="DEFLATE"
+            )
         else:
-            tifffile.imwrite(mem, narray, photometric="minisblack", planarconfig="separate", compression="DEFLATE")
+            tifffile.imwrite(
+                mem,
+                narray,
+                photometric="minisblack",
+                planarconfig="separate",
+                compression="DEFLATE",
+            )
     except Exception as ex:
         raise HTTPException(status_code=400, detail=f"Error writing tiff file: {ex}")
     mem.seek(0)
@@ -115,10 +142,17 @@ def make_tif_response(narray, image_format):
 
 
 def validate_image_request(image_format, image_quality):
-    if image_format not in supported_image_formats and image_format not in alternative_spellings:
-        raise HTTPException(status_code=400, detail="Provided image format parameter not supported")
+    if (
+        image_format not in supported_image_formats
+        and image_format not in alternative_spellings
+    ):
+        raise HTTPException(
+            status_code=400, detail="Provided image format parameter not supported"
+        )
     if image_quality < 0 or image_quality > 100:
-        raise HTTPException(status_code=400, detail="Provided image quality parameter not supported")
+        raise HTTPException(
+            status_code=400, detail="Provided image quality parameter not supported"
+        )
 
 
 def validate_hex_color_string(padding_color):
@@ -126,7 +160,9 @@ def validate_hex_color_string(padding_color):
         match = re.search(r"^#(?:[0-9a-fA-F]{3}){1,2}$", padding_color)
         if match:
             stripped_padding_color = padding_color.lstrip("#")
-            int_padding_color = tuple(int(stripped_padding_color[i : i + 2], 16) for i in (0, 2, 4))
+            int_padding_color = tuple(
+                int(stripped_padding_color[i : i + 2], 16) for i in (0, 2, 4)
+            )
             return int_padding_color
     return settings.padding_color
 
