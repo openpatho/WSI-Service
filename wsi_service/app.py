@@ -78,7 +78,7 @@ def log_api_call(log_entry):
 
 def get_last_api_calls(service_name):
     #pass
-    redislogger.get_last_activity_time(service_name)
+    return redislogger.get_last_activity_time(service_name)
         
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
