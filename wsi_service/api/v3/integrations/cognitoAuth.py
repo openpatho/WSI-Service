@@ -90,7 +90,10 @@ class cognitoAuth(Default):
         cached_value = await cache.get(token)
         if cached_value is not None:
             if self.debug: print("Using cached auth/reject value")
-            valid, systemName = cached_value
+            try:
+                valid, systemName = cached_value
+            except:
+                print(f"Something happend in expanding cached_value. Expecting tupe I guess... got: {type(cached_value)} {cached_value}")
             if not valid:
                 print("cache said it wasn't valid")
                 raise HTTPException(
@@ -165,6 +168,7 @@ class cognitoAuth(Default):
         for jwks_dict in jwks_list:
             try:
                 response = requests.get(jwks_dict["url"])
+                
                 keys = response.json()["keys"]
             
                 # Find the key that matches the kid in the JWT header
@@ -176,7 +180,7 @@ class cognitoAuth(Default):
             
                 return decoded_token, jwks_dict["system"]
             except Exception as e:
-                print(f"did not validate against {jwks_dict['system']} (url={jwks_dict['url']}) result: {e}")
+                print(f"did not validate against {jwks_dict['system']} (url={jwks_dict['url']}) result: {repr(e)}")
                 continue  # Try the next JWKS URL
         
         raise DecodeError("Token could not be validated against any known Cognito JWKS URL.")

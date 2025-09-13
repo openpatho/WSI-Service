@@ -73,9 +73,11 @@ app.mount("/v3", app_v3)
 
 
 def log_api_call(log_entry):
+    #pass
     redislogger.add_health_log(log_entry)
 
 def get_last_api_calls(service_name):
+    #pass
     redislogger.get_last_activity_time(service_name)
         
 @app.middleware("http")
