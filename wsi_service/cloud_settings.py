@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import Any
+import os, json
+from botocore.exceptions import NoCredentialsError
 
 from wsi_service.settings import Settings
 
@@ -24,9 +26,25 @@ class CloudSettings:
     to refresh them from AWS. If the loader is unavailable this class simply
     returns the local ``Settings`` values.
     """
+    def _load_aws_credentials():
+        if os.path.exists("/run/secrets/aws_credentials"):
+            credentials_path = "/run/secrets/aws_credentials"
+        else:
+            credentials_path = "aws_credentials.json"
+        print(f"looking for credentials at: {credentials_path}")
+        if os.path.exists(credentials_path):
+            with open(credentials_path, "r") as file:
+                print("loading json credentials")
+                credentials = json.load(file)
+                os.environ["AWS_ACCESS_KEY_ID"] = credentials["aws_access_key_id"]
+                os.environ["AWS_SECRET_ACCESS_KEY"] = credentials["aws_secret_access_key"]
+                os.environ["AWS_DEFAULT_REGION"] = credentials["aws_default_region"]
+        else:
+            raise NoCredentialsError()
 
     def __init__(self) -> None:
         self._last_refresh: datetime = datetime.min
+        self._load_aws_credentials() # Load AWS credentials from local file or secret on first run
         self._settings = Settings()
         # Force an immediate refresh so secrets apply at startup.
         self._refresh()
@@ -68,11 +86,11 @@ class CloudSettings:
 
     def _refresh(self) -> None:
         self._load_secrets()
-        self._settings = Settings()
         self._last_refresh = datetime.now(timezone.utc)
 
     def __getattr__(self, name: str) -> Any:
         if self._is_stale():
+            # if the cloud settings are stale, refresh them
             self._refresh()
         return getattr(self._settings, name)
 
