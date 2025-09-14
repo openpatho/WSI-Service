@@ -169,7 +169,7 @@ class cognitoAuth(Default):
 
         except (DecodeError, ExpiredSignatureError) as e:
             await cache.set(
-                token, False, ttl=3000
+                token, (False, "None") , ttl=3000
             )  # cache result for 50 minutes - it's definately invalid
             print("Either DecodeError, ExpiredSignatureError")
             print(f"Error: {e}")
