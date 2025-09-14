@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from wsi_service.settings import Settings
@@ -32,7 +32,7 @@ class CloudSettings:
         self._refresh()
 
     def _is_stale(self) -> bool:
-        return datetime.utcnow() - self._last_refresh > timedelta(hours=1)
+        return datetime.now(timezone.utc) - self._last_refresh > timedelta(hours=1)
 
     def _load_secrets(self) -> None:
         if _list_and_get_secrets is None:
@@ -42,11 +42,34 @@ class CloudSettings:
         except Exception:
             secrets = {}
         # TODO: Map values from ``secrets`` into ``self._settings`` if needed.
+        
+        # Dry run: Print what we would do with the secrets
+        if secrets:
+            print(f"[CloudSettings] Found {len(secrets)} secrets from AWS:")
+            for key in secrets.keys():
+                print(f"  - {key}")
+            
+            # Check which settings would be overridden
+            existing_settings = [attr for attr in dir(self._settings) if not attr.startswith('_')]
+            would_override = [key for key in secrets.keys() if key in existing_settings]
+            would_add = [key for key in secrets.keys() if key not in existing_settings]
+            
+            if would_override:
+                print(f"[CloudSettings] Would override {len(would_override)} existing settings:")
+                for key in would_override:
+                    print(f"  - {key}")
+            
+            if would_add:
+                print(f"[CloudSettings] Would add {len(would_add)} new settings:")
+                for key in would_add:
+                    print(f"  - {key}")
+        else:
+            print("[CloudSettings] No secrets found from AWS")
 
     def _refresh(self) -> None:
         self._load_secrets()
         self._settings = Settings()
-        self._last_refresh = datetime.utcnow()
+        self._last_refresh = datetime.now(timezone.utc)
 
     def __getattr__(self, name: str) -> Any:
         if self._is_stale():

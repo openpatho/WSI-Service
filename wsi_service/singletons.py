@@ -3,9 +3,9 @@ import logging
 from pydantic import ValidationError
 
 from .empaia_sender_auth import AioHttpClient, AuthSettings
-from wsi_service.settings import Settings
+from wsi_service.cloud_settings import CloudSettings
 
-settings = Settings()
+settings = CloudSettings()
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
