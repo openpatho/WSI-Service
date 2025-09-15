@@ -9,13 +9,14 @@ from wsi_service.settings import Settings
 # is used here; dotenv support from that module is intentionally ignored.
 try:  # pragma: no cover - import is optional
     from wsi_service.utils.cloudwrappers.aws_secrets import (  # type: ignore
-        _list_and_get_secrets,
+        _list_and_get_secrets, _parse_nested_secret_value
     )
 except Exception:  # pragma: no cover - fallback for different installation
     try:
-        from utils.cloudwrappers.aws_secrets import _list_and_get_secrets  # type: ignore
+        from utils.cloudwrappers.aws_secrets import _list_and_get_secrets, _parse_nested_secret_value  # type: ignore
     except Exception:  # pragma: no cover - aws secrets module not installed
         _list_and_get_secrets = None  # type: ignore
+        _parse_nested_secret_value = None
 
 
 class CloudSettings:
@@ -26,7 +27,7 @@ class CloudSettings:
     to refresh them from AWS. If the loader is unavailable this class simply
     returns the local ``Settings`` values.
     """
-    def _load_aws_credentials():
+    def _load_aws_credentials(self):
         if os.path.exists("/run/secrets/aws_credentials"):
             credentials_path = "/run/secrets/aws_credentials"
         else:
@@ -58,9 +59,30 @@ class CloudSettings:
         try:  # pragma: no cover - network interaction is stubbed
             secrets = _list_and_get_secrets()
         except Exception:
-            secrets = {}
+            return
+        
+        if not secrets:
+            print("blank/no/falsy secrets")
+            return
+        # un-nest the secrets:
+        unnested={}
+        for key, value in secrets.items():
+                parsed = _parse_nested_secret_value(value)
+                if isinstance(parsed, dict):
+                    
+                    for nested_key, nested_value in parsed.items():
+                        lower_key = nested_key.lower() # settings seems to use all lowercase - should try to be consistent
+                        unnested[lower_key] = nested_value
+                else:
+                    lower_key  = key.lower()  # settings seems to use all lowercase - should try to be consistent
+                    unnested[lower_key] = parsed
+
+        secrets = unnested # put them back here for rest of code.
+        
         # TODO: Map values from ``secrets`` into ``self._settings`` if needed.
         
+
+
         # Dry run: Print what we would do with the secrets
         if secrets:
             print(f"[CloudSettings] Found {len(secrets)} secrets from AWS:")
@@ -76,6 +98,8 @@ class CloudSettings:
                 print(f"[CloudSettings] Would override {len(would_override)} existing settings:")
                 for key in would_override:
                     print(f"  - {key}")
+            else:
+                print("No existing settings would be over-ridden")
             
             if would_add:
                 print(f"[CloudSettings] Would add {len(would_add)} new settings:")
