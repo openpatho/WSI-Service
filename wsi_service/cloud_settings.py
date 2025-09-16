@@ -18,6 +18,12 @@ except Exception:  # pragma: no cover - fallback for different installation
         _list_and_get_secrets = None  # type: ignore
         _parse_nested_secret_value = None
 
+class DotDict(dict):
+    """Dict with dot notation access"""
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
 
 class CloudSettings:
     """Wrapper around :class:`Settings` that refreshes AWS secrets.
@@ -49,6 +55,7 @@ class CloudSettings:
         self._settings = Settings()
         # Force an immediate refresh so secrets apply at startup.
         self._refresh()
+        self._cloud = DotDict()
 
     def _is_stale(self) -> bool:
         return datetime.now(timezone.utc) - self._last_refresh > timedelta(hours=1)
@@ -77,32 +84,33 @@ class CloudSettings:
                     lower_key  = key.lower()  # settings seems to use all lowercase - should try to be consistent
                     unnested[lower_key] = parsed
 
-        secrets = unnested # put them back here for rest of code.
-        
+         
+        if unnested:
+            self._cloud = DotDict(unnested) # the new cloud settings can be accessed from _settings.cloud.blah
         # TODO: Map values from ``secrets`` into ``self._settings`` if needed.
         
 
 
         # Dry run: Print what we would do with the secrets
-        if secrets:
-            print(f"[CloudSettings] Found {len(secrets)} secrets from AWS:")
-            for key in secrets.keys():
+        if self._cloud:
+            print(f"[CloudSettings] Found {len(self._cloud)} secrets from AWS:")
+            for key in self._cloud.keys():
                 print(f"  - {key}")
             
             # Check which settings would be overridden
             existing_settings = [attr for attr in dir(self._settings) if not attr.startswith('_')]
-            would_override = [key for key in secrets.keys() if key in existing_settings]
-            would_add = [key for key in secrets.keys() if key not in existing_settings]
+            would_override = [key for key in self._cloud.keys() if key in existing_settings]
+            would_add = [key for key in self._cloud.keys() if key not in existing_settings]
             
             if would_override:
-                print(f"[CloudSettings] Would override {len(would_override)} existing settings:")
+                print(f"[CloudSettings] Could override {len(would_override)} existing settings:")
                 for key in would_override:
                     print(f"  - {key}")
             else:
                 print("No existing settings would be over-ridden")
             
             if would_add:
-                print(f"[CloudSettings] Would add {len(would_add)} new settings:")
+                print(f"[CloudSettings] Could add {len(would_add)} new settings:")
                 for key in would_add:
                     print(f"  - {key}")
         else:
@@ -111,6 +119,13 @@ class CloudSettings:
     def _refresh(self) -> None:
         self._load_secrets()
         self._last_refresh = datetime.now(timezone.utc)
+
+    # Prefer a property for 'cloud' so staleness checks also apply when accessing it
+    @property
+    def cloud(self) -> DotDict:
+        if self._is_stale():
+            self._refresh()
+        return self._cloud
 
     def __getattr__(self, name: str) -> Any:
         if self._is_stale():
