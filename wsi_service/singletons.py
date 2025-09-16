@@ -6,7 +6,7 @@ from .empaia_sender_auth import AioHttpClient, AuthSettings
 from wsi_service.cloud_settings import CloudSettings
 
 settings = CloudSettings()
-
+print(f"Settings loaded. settings.cloud has {len(settings.cloud.keys())} keys")
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
 if settings.debug:

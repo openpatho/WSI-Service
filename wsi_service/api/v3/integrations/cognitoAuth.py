@@ -28,23 +28,24 @@ cache = caches.get("default")
 class cognitoAuth(Default):
     def __init__(self, settings, logger, http_client=None):
         super().__init__(settings, logger, http_client)
-        self.idp_url = settings.idp_url
-        self.client_id = settings.client_id
-        self.cognito_user_pool_id = (
-            settings.cognito_user_pool_id
-        )  # Add this to settings
-        self.aws_region = settings.aws_region  # Add this to settings
-        self.jwks_url = settings.jwks_url
-        self.hack_token = settings.hack_token
+        #print(f"getting cognito details from settings. settings.cloud has {len(settings.cloud.keys())} keys")
+        #print(f"region is set to: type{type(settings.cloud.cognito_aws_region)}={settings.cloud.cognito_aws_region}")
+        self.idp_url = settings.cloud.idp_url        
+        self.client_id = settings.cloud.client_id        
+        self.cognito_user_pool_id = settings.cloud.cognito_user_pool_id
+        self.aws_region = settings.cloud.cognito_aws_region          
+        self.jwks_url = settings.cloud.jwks_url
+        
+        
 
-        self.prod_idp_url = settings.prod_idp_url
-        self.prod_client_id = settings.prod_client_id
-        self.prod_cognito_user_pool_id = (
-            settings.prod_cognito_user_pool_id
-        )  # Add this to settings
-        self.prod_aws_region = settings.prod_aws_region  # Add this to settings
-        self.prod_jwks_url = settings.prod_jwks_url
+        self.prod_idp_url = settings.cloud.prod_idp_url        
+        self.prod_client_id = settings.cloud.prod_client_id        
+        self.prod_cognito_user_pool_id = settings.cloud.prod_cognito_user_pool_id        
+        self.prod_aws_region = settings.cloud.prod_cognito_aws_region        
+        self.prod_jwks_url = settings.cloud.prod_jwks_url
+        
         self.debug = settings.debug
+        self.hack_token = settings.hack_token
 
     @staticmethod
     def global_depends():

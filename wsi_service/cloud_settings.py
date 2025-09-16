@@ -53,12 +53,15 @@ class CloudSettings:
         self._last_refresh: datetime = datetime.min
         self._load_aws_credentials() # Load AWS credentials from local file or secret on first run
         self._settings = Settings()
+        self._cloud = DotDict()
         # Force an immediate refresh so secrets apply at startup.
         self._refresh()
-        self._cloud = DotDict()
+        
 
     def _is_stale(self) -> bool:
-        return datetime.now(timezone.utc) - self._last_refresh > timedelta(hours=1)
+        age = datetime.now(timezone.utc) - self._last_refresh 
+        #print(f"Cloud last refresh was: {self._last_refresh } secret age is: {age}")
+        return age > timedelta(hours=1)
 
     def _load_secrets(self) -> None:
         if _list_and_get_secrets is None:
@@ -94,25 +97,9 @@ class CloudSettings:
         # Dry run: Print what we would do with the secrets
         if self._cloud:
             print(f"[CloudSettings] Found {len(self._cloud)} secrets from AWS:")
-            for key in self._cloud.keys():
-                print(f"  - {key}")
-            
-            # Check which settings would be overridden
-            existing_settings = [attr for attr in dir(self._settings) if not attr.startswith('_')]
-            would_override = [key for key in self._cloud.keys() if key in existing_settings]
-            would_add = [key for key in self._cloud.keys() if key not in existing_settings]
-            
-            if would_override:
-                print(f"[CloudSettings] Could override {len(would_override)} existing settings:")
-                for key in would_override:
-                    print(f"  - {key}")
-            else:
-                print("No existing settings would be over-ridden")
-            
-            if would_add:
-                print(f"[CloudSettings] Could add {len(would_add)} new settings:")
-                for key in would_add:
-                    print(f"  - {key}")
+            #for key in self._cloud.keys():
+            #    print(f"  - {key}")
+        
         else:
             print("[CloudSettings] No secrets found from AWS")
 
@@ -132,7 +119,3 @@ class CloudSettings:
             # if the cloud settings are stale, refresh them
             self._refresh()
         return getattr(self._settings, name)
-
-
-# Expose an instance for easy import
-settings = CloudSettings()
