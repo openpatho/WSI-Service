@@ -15,6 +15,22 @@ try:
 except:
     from utils.cloudwrappers.redis_openpatho import RedisLogger
 
+class CacheControlMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app, value: str, exclude: tuple[str, ...] = ()):
+        super().__init__(app)
+        self.value = value
+        self.exclude = exclude
+
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        if request.method in ("GET", "HEAD"):
+            path = request.url.path
+            if not any(path.startswith(p) for p in self.exclude):
+                # don't override if a route already set a specific policy
+                response.headers.setdefault("Cache-Control", self.value)
+        return response
+
+
 
 redislogger = RedisLogger()
 
@@ -58,6 +74,7 @@ app_v3 = FastAPI(
     redoc_url=None,
 )
 
+
 if settings.cors_allow_origins:
     for app_obj in [app, app_v3]:
         app_obj.add_middleware(
@@ -66,6 +83,11 @@ if settings.cors_allow_origins:
             allow_credentials=settings.cors_allow_credentials,
             allow_methods=["*"],
             allow_headers=["*"],
+        )
+        app_obj.add_middleware(
+            CacheControlMiddleware,
+            value="public, max-age=300, stale-while-revalidate=60",
+            exclude=("/docs", "/openapi.json", "/redoc")
         )
 
 add_routes_v3(app_v3, settings, slide_manager)
@@ -81,6 +103,9 @@ def log_api_call(log_entry):
 def get_last_api_calls(service_name):
     # pass
     return redislogger.get_last_activity_time(service_name)
+
+
+
 
 
 @app.middleware("http")
