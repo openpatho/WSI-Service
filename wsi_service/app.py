@@ -8,7 +8,7 @@ from wsi_service.api.root import add_routes_root
 from wsi_service.api.v3 import add_routes_v3
 from wsi_service.singletons import settings
 from wsi_service.slide_manager import SlideManager
-
+from starlette.middleware.base import BaseHTTPMiddleware
 
 try:
     from wsi_service.utils.cloudwrappers.redis_openpatho import RedisLogger
