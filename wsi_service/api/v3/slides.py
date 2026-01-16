@@ -18,6 +18,7 @@ from wsi_service.custom_models.queries import (
 )
 from wsi_service.custom_models.responses import ImageRegionResponse, ImageResponses
 from wsi_service.models.v3.slide import SlideInfo
+from wsi_service.singletons import logger
 from wsi_service.utils.app_utils import (
     make_response,
     validate_hex_color_string,
@@ -480,9 +481,9 @@ def add_routes_slides(app, settings, slide_manager):
         """
         Get metadata information for a slide set (see description above sister function)
         """
-        print("In the newer `info` code")
+        logger.debug("In the newer `info` code")
         slide_ids = paths.split(",")
-        print(f"slide_ids are: {slide_ids}")
+        logger.debug("slide_ids are: %s", slide_ids)
         requests = map(
             lambda sid: slide_manager.get_slide_info(
                 sid, slide_info_model=SlideInfo, plugin=plugin
@@ -490,7 +491,7 @@ def add_routes_slides(app, settings, slide_manager):
             slide_ids,
         )
         slide_list = await asyncio.gather(*requests)
-        print("run map & gather")
+        logger.debug("run map & gather")
         try:
             requests = [
                 api_integration.allow_access_slide(
@@ -504,13 +505,13 @@ def add_routes_slides(app, settings, slide_manager):
                 for slide in slide_ids
             ]
         except Exception as e:
-            print(f"Auth Failed: {e}")
+            logger.debug("Auth Failed: %s", e)
             raise e
 
         await asyncio.gather(*requests)
-        print("finished the auth and gather")
+        logger.debug("finished the auth and gather")
         _ = [log_slide_access(slide) for slide in slide_ids]
-        print("finished logging access")
+        logger.debug("finished logging access")
         return slide_list
 
     @app.get(
@@ -796,7 +797,7 @@ def add_routes_slides(app, settings, slide_manager):
         plugin: str = PluginQuery,
         payload: Optional[str] = Depends(get_authorization_header),
     ):
-        print("In the batch/info translation")
+        logger.debug("In the batch/info translation")
         slidesStr = str(slides)
         return await info(slidesStr, plugin, payload)
 
